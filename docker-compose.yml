@@ -1,0 +1,39 @@
+version: "3.9"
+
+services:
+  db:
+    image: mysql:8.0
+    ports:
+      - "3310:3306"
+    env_file:
+      - .env
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  backend:
+    build:
+      context: ./backend
+      args:
+        ENV: development
+    ports:
+      - "8001:8000"
+    volumes:
+      - ./backend:/app
+    restart: always
+    depends_on:
+      - db
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        NODE_ENV: development
+    ports:
+      - "3001:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    restart: always
+
+volumes:
+  mysql_data: {}
