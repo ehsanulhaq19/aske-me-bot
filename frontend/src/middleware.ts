@@ -3,10 +3,10 @@ import type { NextRequest } from 'next/server';
 import { getToken } from '@/services/security';
 
 // List of public paths that don't require authentication
-const publicPaths = ['/login', '/register', '/forgot-password'];
+const publicPaths = ['/login'];
 
 export function middleware(request: NextRequest) {
-  const token = getToken();
+  const token = request.cookies.get('access_token')?.value || getToken();
   const { pathname } = request.nextUrl;
 
   // Check if the path is public
