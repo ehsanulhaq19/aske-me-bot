@@ -23,5 +23,6 @@ class UserLogin(BaseModel):
     password: str
 
 class Token(BaseModel):
+    user: UserOut
     access_token: str
     token_type: str

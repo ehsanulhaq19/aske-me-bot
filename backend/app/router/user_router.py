@@ -21,7 +21,7 @@ def login(user: UserLogin):
     if not db_user or not verify_password(user.password, db_user.hashed_password):
         raise HTTPException(status_code=400, detail="Invalid credentials")
     token = create_access_token(data={"sub": user.email})
-    return {"access_token": token, "token_type": "bearer"}
+    return {"user": UserOut.from_orm(db_user), "access_token": token, "token_type": "bearer"}
 
 @router.delete("/users/{user_id}")
 def delete_user_endpoint(user_id: int, current_user: User = Depends(get_current_user)):
