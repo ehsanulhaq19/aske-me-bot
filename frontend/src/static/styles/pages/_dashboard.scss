@@ -1,0 +1,155 @@
+@import '../abstracts/variables';
+@import '../abstracts/mixins';
+
+.dashboard {
+  padding: $spacing-lg $spacing-xl;
+  background-color: $bg-secondary;
+  min-height: 100vh;
+
+  &__header {
+    @include flex-between;
+    margin-bottom: $spacing-xl;
+
+    &-title {
+      @include heading-1;
+    }
+
+    &-actions {
+      display: flex;
+      gap: $spacing-md;
+    }
+  }
+
+  &__stats {
+    @include grid-layout(4, $spacing-lg);
+    margin-bottom: $spacing-xl;
+
+    @include tablet {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @include mobile {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  &__stat-card {
+    @include card;
+    
+    &-title {
+      color: $text-secondary;
+      font-size: $font-size-sm;
+      margin-bottom: $spacing-xs;
+    }
+
+    &-value {
+      font-size: $font-size-2xl;
+      font-weight: 600;
+      color: $text-primary;
+    }
+
+    &-change {
+      @include flex-center;
+      gap: $spacing-xs;
+      margin-top: $spacing-sm;
+      font-size: $font-size-sm;
+
+      &.positive {
+        color: $success-color;
+      }
+
+      &.negative {
+        color: $danger-color;
+      }
+    }
+  }
+
+  &__main {
+    @include grid-layout(3, $spacing-xl);
+    margin-bottom: $spacing-xl;
+
+    @include tablet {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @include mobile {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  &__chart-card {
+    @include card;
+    min-height: 400px;
+
+    &-header {
+      @include flex-between;
+      margin-bottom: $spacing-lg;
+
+      &-title {
+        @include heading-2;
+      }
+    }
+  }
+
+  &__activity {
+    @include card;
+    grid-column: span 3;
+
+    @include tablet {
+      grid-column: span 2;
+    }
+
+    @include mobile {
+      grid-column: span 1;
+    }
+
+    &-header {
+      @include flex-between;
+      margin-bottom: $spacing-lg;
+
+      &-title {
+        @include heading-2;
+      }
+    }
+
+    &-list {
+      display: flex;
+      flex-direction: column;
+      gap: $spacing-md;
+    }
+
+    &-item {
+      @include flex-between;
+      padding: $spacing-md;
+      border-radius: $border-radius-md;
+      background-color: $bg-secondary;
+      transition: background-color $transition-fast;
+
+      &:hover {
+        background-color: $bg-tertiary;
+      }
+
+      &-info {
+        display: flex;
+        align-items: center;
+        gap: $spacing-md;
+      }
+
+      &-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: $border-radius-full;
+        object-fit: cover;
+      }
+
+      &-content {
+        @include body-text;
+      }
+
+      &-time {
+        color: $text-muted;
+        font-size: $font-size-sm;
+      }
+    }
+  }
+} 

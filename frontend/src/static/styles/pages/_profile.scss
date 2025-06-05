@@ -1,0 +1,249 @@
+@import '../abstracts/variables';
+@import '../abstracts/mixins';
+
+.profile {
+  padding: $spacing-lg $spacing-xl;
+  background-color: $bg-secondary;
+  min-height: 100vh;
+
+  &__header {
+    @include card;
+    margin-bottom: $spacing-xl;
+    padding: $spacing-2xl;
+    text-align: center;
+    position: relative;
+
+    &-cover {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 200px;
+      background-color: $primary-color;
+      border-top-left-radius: $border-radius-lg;
+      border-top-right-radius: $border-radius-lg;
+      overflow: hidden;
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+    }
+
+    &-avatar {
+      position: relative;
+      width: 150px;
+      height: 150px;
+      margin: 120px auto $spacing-lg;
+      border-radius: $border-radius-full;
+      border: 4px solid $bg-primary;
+      overflow: hidden;
+      background-color: $bg-tertiary;
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      &-edit {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: $spacing-xs;
+        background-color: rgba($text-primary, 0.8);
+        color: white;
+        font-size: $font-size-sm;
+        text-align: center;
+        cursor: pointer;
+        opacity: 0;
+        transition: opacity $transition-fast;
+      }
+
+      &:hover &-edit {
+        opacity: 1;
+      }
+    }
+
+    &-info {
+      &-name {
+        @include heading-1;
+        margin-bottom: $spacing-xs;
+      }
+
+      &-title {
+        color: $text-secondary;
+        margin-bottom: $spacing-md;
+      }
+
+      &-stats {
+        display: flex;
+        justify-content: center;
+        gap: $spacing-xl;
+        margin-bottom: $spacing-lg;
+
+        &-item {
+          text-align: center;
+
+          &-value {
+            font-size: $font-size-xl;
+            font-weight: 600;
+            color: $text-primary;
+            margin-bottom: $spacing-xs;
+          }
+
+          &-label {
+            color: $text-secondary;
+            font-size: $font-size-sm;
+          }
+        }
+      }
+    }
+
+    &-actions {
+      display: flex;
+      justify-content: center;
+      gap: $spacing-md;
+    }
+  }
+
+  &__content {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: $spacing-xl;
+
+    @include tablet {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  &__sidebar {
+    @include card;
+
+    &-section {
+      padding: $spacing-lg;
+      border-bottom: 1px solid $border-color;
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      &-title {
+        @include heading-2;
+        margin-bottom: $spacing-lg;
+      }
+    }
+
+    &-info {
+      &-item {
+        display: flex;
+        align-items: center;
+        gap: $spacing-md;
+        margin-bottom: $spacing-md;
+        color: $text-secondary;
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+
+        i {
+          color: $primary-color;
+          font-size: $font-size-lg;
+        }
+      }
+    }
+
+    &-skills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: $spacing-sm;
+
+      &-item {
+        padding: $spacing-xs $spacing-sm;
+        background-color: $bg-tertiary;
+        border-radius: $border-radius-md;
+        font-size: $font-size-sm;
+        color: $text-secondary;
+      }
+    }
+  }
+
+  &__main {
+    @include card;
+
+    &-tabs {
+      display: flex;
+      border-bottom: 1px solid $border-color;
+
+      &-item {
+        padding: $spacing-md $spacing-lg;
+        color: $text-secondary;
+        cursor: pointer;
+        transition: all $transition-fast;
+        border-bottom: 2px solid transparent;
+
+        &.active {
+          color: $primary-color;
+          border-bottom-color: $primary-color;
+        }
+
+        &:hover:not(.active) {
+          color: $text-primary;
+        }
+      }
+    }
+
+    &-content {
+      padding: $spacing-lg;
+    }
+  }
+
+  &__activity {
+    &-item {
+      display: flex;
+      gap: $spacing-md;
+      padding: $spacing-md 0;
+      border-bottom: 1px solid $border-color-light;
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      &-icon {
+        width: 40px;
+        height: 40px;
+        @include flex-center;
+        background-color: $bg-tertiary;
+        border-radius: $border-radius-md;
+        color: $primary-color;
+      }
+
+      &-content {
+        flex: 1;
+
+        &-header {
+          display: flex;
+          justify-content: space-between;
+          margin-bottom: $spacing-xs;
+
+          &-title {
+            font-weight: 500;
+            color: $text-primary;
+          }
+
+          &-time {
+            color: $text-muted;
+            font-size: $font-size-sm;
+          }
+        }
+
+        &-description {
+          color: $text-secondary;
+          font-size: $font-size-sm;
+        }
+      }
+    }
+  }
+} 

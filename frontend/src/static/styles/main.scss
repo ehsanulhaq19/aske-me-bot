@@ -1,11 +1,17 @@
-// Abstracts
-@use 'abstracts/variables';
+// Import abstracts
+@import 'abstracts/variables';
+@import 'abstracts/mixins';
 
-// Base styles
-@use 'base/reset';
+// Import base styles
+@import 'base/reset';
 
-// Components
-@use 'components';
+// Import pages
+@import 'pages/dashboard';
+@import 'pages/documents';
+@import 'pages/profile';
+@import 'pages/widgets';
+@import 'pages/login';
 
-// Pages
-@use 'pages';
+// Import components
+
+// Import utilities

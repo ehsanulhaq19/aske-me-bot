@@ -18,8 +18,8 @@ export default function BlankLayout({ children }: BlankLayoutProps) {
       }}
     >
       <HStack spacing={2} p={4}>
-        <Image src="/static/images/logo.svg" alt="Ask Me Bot Logo" boxSize="40px" />
-        <Heading size="md" color="blue.600" letterSpacing="-0.5px">AskMe Bot</Heading>
+        <Image src="/static/images/logo-white.svg" alt="Ask Me Bot Logo" boxSize="40px" />
+        <Heading size="md" color="white.600" letterSpacing="-0.5px">AskMe Bot</Heading>
       </HStack>
       
       <Box

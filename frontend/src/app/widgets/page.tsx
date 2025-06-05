@@ -1,187 +1,131 @@
 'use client';
 
-import {
-  Box,
-  Button,
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-  IconButton,
-  useDisclosure,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalCloseButton,
-  FormControl,
-  FormLabel,
-  Input,
-  VStack,
-  useToast,
-  Heading,
-} from '@chakra-ui/react';
-import { FiEdit2, FiTrash2, FiPlus } from 'react-icons/fi';
 import { useState } from 'react';
+import { FiEdit2, FiTrash2, FiPlus, FiMessageSquare, FiSettings } from 'react-icons/fi';
+import DashboardLayout from '@/layouts/DashboardLayout';
+import styles from '@/static/styles/pages/widgets.module.css';
 
-interface Widget {
+interface Chatbot {
   id: string;
   name: string;
   description: string;
   status: 'active' | 'inactive';
+  createdAt: string;
+  lastActive: string;
+  messageCount: number;
+  avatar?: string;
 }
 
 export default function Widgets() {
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const [widgets, setWidgets] = useState<Widget[]>([
+  const [chatbots] = useState<Chatbot[]>([
     {
       id: '1',
-      name: 'Support Chat',
-      description: 'Customer support chatbot',
+      name: 'Customer Support Bot',
+      description: 'Handles customer inquiries and support tickets',
       status: 'active',
+      createdAt: '2024-03-15',
+      lastActive: '2 hours ago',
+      messageCount: 1234,
+      avatar: '/bot1.jpg'
     },
-    // Add more mock data as needed
-  ]);
-  const [editingWidget, setEditingWidget] = useState<Widget | null>(null);
-  const toast = useToast();
-
-  const handleSubmit = (event: React.FormEvent) => {
-    event.preventDefault();
-    const form = event.target as HTMLFormElement;
-    const formData = new FormData(form);
-    
-    const widgetData = {
-      name: formData.get('name') as string,
-      description: formData.get('description') as string,
-      status: 'inactive' as const,
-    };
-
-    if (editingWidget) {
-      // Update existing widget
-      setWidgets(widgets.map(w => 
-        w.id === editingWidget.id 
-          ? { ...w, ...widgetData }
-          : w
-      ));
-      toast({
-        title: 'Widget updated',
-        status: 'success',
-        duration: 3000,
-      });
-    } else {
-      // Create new widget
-      setWidgets([...widgets, { 
-        ...widgetData, 
-        id: Date.now().toString(),
-      }]);
-      toast({
-        title: 'Widget created',
-        status: 'success',
-        duration: 3000,
-      });
+    {
+      id: '2',
+      name: 'Sales Assistant',
+      description: 'Helps with product recommendations and sales',
+      status: 'active',
+      createdAt: '2024-03-10',
+      lastActive: '5 minutes ago',
+      messageCount: 856,
+      avatar: '/bot2.jpg'
     }
-    
-    onClose();
-    setEditingWidget(null);
+  ]);
+
+  const handleAddChatbot = () => {
+    // Add chatbot logic
   };
 
-  const handleEdit = (widget: Widget) => {
-    setEditingWidget(widget);
-    onOpen();
+  const handleEditChatbot = (id: string) => {
+    // Edit chatbot logic
   };
 
-  const handleDelete = (id: string) => {
-    setWidgets(widgets.filter(w => w.id !== id));
-    toast({
-      title: 'Widget deleted',
-      status: 'success',
-      duration: 3000,
-    });
+  const handleDeleteChatbot = (id: string) => {
+    // Delete chatbot logic
   };
 
   return (
-    <Box>
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={6}>
-        <Heading>Widgets</Heading>
-        <Button leftIcon={<FiPlus />} colorScheme="blue" onClick={() => {
-          setEditingWidget(null);
-          onOpen();
-        }}>
-          Add Widget
-        </Button>
-      </Box>
+    <DashboardLayout>
+      <div className={styles.container}>
+        <div className={styles.header}>
+          <h1 className={styles.title}>Chatbots</h1>
+          <div className={styles.actions}>
+            <button className={`${styles.footerButton} ${styles.primaryButton}`} onClick={handleAddChatbot}>
+              <FiPlus /> Create New Chatbot
+            </button>
+          </div>
+        </div>
 
-      <Table variant="simple">
-        <Thead>
-          <Tr>
-            <Th>Name</Th>
-            <Th>Description</Th>
-            <Th>Status</Th>
-            <Th>Actions</Th>
-          </Tr>
-        </Thead>
-        <Tbody>
-          {widgets.map((widget) => (
-            <Tr key={widget.id}>
-              <Td>{widget.name}</Td>
-              <Td>{widget.description}</Td>
-              <Td>{widget.status}</Td>
-              <Td>
-                <IconButton
-                  aria-label="Edit widget"
-                  icon={<FiEdit2 />}
-                  mr={2}
-                  onClick={() => handleEdit(widget)}
-                />
-                <IconButton
-                  aria-label="Delete widget"
-                  icon={<FiTrash2 />}
-                  colorScheme="red"
-                  onClick={() => handleDelete(widget.id)}
-                />
-              </Td>
-            </Tr>
+        <div className={styles.grid}>
+          {chatbots.map((chatbot) => (
+            <div key={chatbot.id} className={styles.chatbot}>
+              <div className={styles.chatbotHeader}>
+                <div className={styles.avatar}>
+                  <img src={chatbot.avatar || '/default-bot.jpg'} alt={chatbot.name} />
+                  <span className={`${styles.statusIndicator} ${styles[chatbot.status]}`} />
+                </div>
+                <div className={styles.info}>
+                  <h2 className={styles.name}>{chatbot.name}</h2>
+                  <p className={styles.description}>{chatbot.description}</p>
+                </div>
+                <div className={styles.actions}>
+                  <button 
+                    className={styles.actionButton}
+                    onClick={() => handleEditChatbot(chatbot.id)}
+                    title="Edit Chatbot"
+                  >
+                    <FiEdit2 />
+                  </button>
+                  <button 
+                    className={styles.actionButton}
+                    onClick={() => handleDeleteChatbot(chatbot.id)}
+                    title="Delete Chatbot"
+                  >
+                    <FiTrash2 />
+                  </button>
+                </div>
+              </div>
+
+              <div className={styles.stats}>
+                <div className={styles.stat}>
+                  <FiMessageSquare className={styles.statIcon} />
+                  <span>{chatbot.messageCount.toLocaleString()} messages</span>
+                </div>
+                <div className={styles.stat}>
+                  <span>Last active: {chatbot.lastActive}</span>
+                </div>
+              </div>
+
+              <div className={styles.footer}>
+                <button className={`${styles.footerButton} ${styles.primaryButton}`}>
+                  <FiMessageSquare /> Open Chat
+                </button>
+                <button className={`${styles.footerButton} ${styles.secondaryButton}`}>
+                  <FiSettings /> Settings
+                </button>
+              </div>
+            </div>
           ))}
-        </Tbody>
-      </Table>
 
-      <Modal isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>
-            {editingWidget ? 'Edit Widget' : 'Create Widget'}
-          </ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <form onSubmit={handleSubmit}>
-              <VStack spacing={4}>
-                <FormControl isRequired>
-                  <FormLabel>Name</FormLabel>
-                  <Input
-                    name="name"
-                    defaultValue={editingWidget?.name}
-                    placeholder="Enter widget name"
-                  />
-                </FormControl>
-                <FormControl isRequired>
-                  <FormLabel>Description</FormLabel>
-                  <Input
-                    name="description"
-                    defaultValue={editingWidget?.description}
-                    placeholder="Enter widget description"
-                  />
-                </FormControl>
-                <Button type="submit" colorScheme="blue" width="full">
-                  {editingWidget ? 'Update' : 'Create'}
-                </Button>
-              </VStack>
-            </form>
-          </ModalBody>
-        </ModalContent>
-      </Modal>
-    </Box>
+          <button className={styles.addChatbot} onClick={handleAddChatbot}>
+            <div className={styles.addIcon}>
+              <FiPlus />
+            </div>
+            <div className={styles.addText}>Create New Chatbot</div>
+            <div className={styles.addSubtext}>
+              Add a new chatbot to handle customer interactions
+            </div>
+          </button>
+        </div>
+      </div>
+    </DashboardLayout>
   );
 } 

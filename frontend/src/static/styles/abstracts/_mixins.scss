@@ -1,0 +1,138 @@
+@import 'variables';
+
+// Flexbox helpers
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+// Card styles
+@mixin card {
+  background-color: $bg-primary;
+  border-radius: $border-radius-lg;
+  box-shadow: $shadow-sm;
+  padding: $spacing-lg;
+  border: 1px solid $border-color;
+  transition: box-shadow $transition-normal;
+
+  &:hover {
+    box-shadow: $shadow-md;
+  }
+}
+
+// Button styles
+@mixin button-base {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-sm $spacing-lg;
+  border-radius: $border-radius-md;
+  font-weight: 500;
+  transition: all $transition-fast;
+  cursor: pointer;
+  
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+}
+
+@mixin button-primary {
+  @include button-base;
+  background-color: $primary-color;
+  color: white;
+  
+  &:hover:not(:disabled) {
+    background-color: $primary-dark;
+  }
+}
+
+@mixin button-secondary {
+  @include button-base;
+  background-color: $bg-secondary;
+  color: $text-secondary;
+  border: 1px solid $border-color;
+  
+  &:hover:not(:disabled) {
+    background-color: $bg-tertiary;
+  }
+}
+
+// Input styles
+@mixin input {
+  width: 100%;
+  padding: $spacing-sm $spacing-md;
+  border: 1px solid $border-color;
+  border-radius: $border-radius-md;
+  background-color: $bg-primary;
+  color: $text-primary;
+  transition: border-color $transition-fast;
+  
+  &:focus {
+    outline: none;
+    border-color: $primary-light;
+    box-shadow: 0 0 0 3px rgba($primary-color, 0.1);
+  }
+  
+  &::placeholder {
+    color: $text-muted;
+  }
+}
+
+// Grid layout
+@mixin grid-layout($columns: 1, $gap: $spacing-md) {
+  display: grid;
+  grid-template-columns: repeat($columns, 1fr);
+  gap: $gap;
+}
+
+// Responsive breakpoints
+@mixin mobile {
+  @media (max-width: 640px) { @content; }
+}
+
+@mixin tablet {
+  @media (min-width: 641px) and (max-width: 1024px) { @content; }
+}
+
+@mixin desktop {
+  @media (min-width: 1025px) { @content; }
+}
+
+// Animation
+@mixin fade-in {
+  animation: fadeIn $transition-normal;
+  
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+}
+
+// Typography
+@mixin heading-1 {
+  font-size: $font-size-2xl;
+  font-weight: 700;
+  color: $text-primary;
+  line-height: 1.2;
+}
+
+@mixin heading-2 {
+  font-size: $font-size-xl;
+  font-weight: 600;
+  color: $text-primary;
+  line-height: 1.3;
+}
+
+@mixin body-text {
+  font-size: $font-size-base;
+  color: $text-secondary;
+  line-height: 1.5;
+} 

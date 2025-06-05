@@ -1,0 +1,205 @@
+@import '../abstracts/variables';
+@import '../abstracts/mixins';
+
+.documents {
+  padding: $spacing-lg $spacing-xl;
+  background-color: $bg-secondary;
+  min-height: 100vh;
+
+  &__header {
+    @include flex-between;
+    margin-bottom: $spacing-xl;
+
+    &-title {
+      @include heading-1;
+    }
+
+    &-actions {
+      display: flex;
+      gap: $spacing-md;
+    }
+  }
+
+  &__filters {
+    @include card;
+    margin-bottom: $spacing-xl;
+    display: flex;
+    gap: $spacing-lg;
+    align-items: center;
+    flex-wrap: wrap;
+
+    &-search {
+      flex: 1;
+      min-width: 300px;
+      @include input;
+    }
+
+    &-select {
+      @include input;
+      min-width: 200px;
+    }
+  }
+
+  &__grid {
+    @include grid-layout(4, $spacing-lg);
+    margin-bottom: $spacing-xl;
+
+    @include tablet {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    @include mobile {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  &__card {
+    @include card;
+    cursor: pointer;
+    padding: $spacing-md;
+
+    &-preview {
+      width: 100%;
+      height: 160px;
+      background-color: $bg-tertiary;
+      border-radius: $border-radius-md;
+      margin-bottom: $spacing-md;
+      overflow: hidden;
+      
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+    }
+
+    &-info {
+      &-title {
+        font-weight: 600;
+        color: $text-primary;
+        margin-bottom: $spacing-xs;
+      }
+
+      &-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: $text-muted;
+        font-size: $font-size-sm;
+      }
+    }
+
+    &-actions {
+      margin-top: $spacing-sm;
+      opacity: 0;
+      transition: opacity $transition-fast;
+      @include flex-between;
+    }
+
+    &:hover {
+      .documents__card-actions {
+        opacity: 1;
+      }
+    }
+  }
+
+  &__list {
+    @include card;
+    margin-bottom: $spacing-xl;
+
+    &-header {
+      @include flex-between;
+      padding: $spacing-md;
+      border-bottom: 1px solid $border-color;
+      font-weight: 600;
+      color: $text-secondary;
+    }
+
+    &-item {
+      @include flex-between;
+      padding: $spacing-md;
+      border-bottom: 1px solid $border-color-light;
+      transition: background-color $transition-fast;
+
+      &:hover {
+        background-color: $bg-tertiary;
+      }
+
+      &-info {
+        display: flex;
+        align-items: center;
+        gap: $spacing-md;
+      }
+
+      &-icon {
+        width: 40px;
+        height: 40px;
+        @include flex-center;
+        background-color: $bg-tertiary;
+        border-radius: $border-radius-md;
+        color: $primary-color;
+      }
+
+      &-details {
+        h3 {
+          color: $text-primary;
+          font-weight: 500;
+          margin-bottom: $spacing-xs;
+        }
+
+        p {
+          color: $text-muted;
+          font-size: $font-size-sm;
+        }
+      }
+
+      &-meta {
+        display: flex;
+        align-items: center;
+        gap: $spacing-xl;
+        color: $text-secondary;
+        font-size: $font-size-sm;
+      }
+
+      &-actions {
+        opacity: 0;
+        transition: opacity $transition-fast;
+      }
+
+      &:hover &-actions {
+        opacity: 1;
+      }
+    }
+  }
+
+  &__empty {
+    @include flex-center;
+    flex-direction: column;
+    gap: $spacing-md;
+    padding: $spacing-2xl;
+    text-align: center;
+    color: $text-secondary;
+
+    &-icon {
+      font-size: $font-size-2xl;
+      color: $text-muted;
+    }
+
+    &-text {
+      @include heading-2;
+      margin-bottom: $spacing-sm;
+    }
+
+    &-subtext {
+      color: $text-muted;
+      margin-bottom: $spacing-lg;
+    }
+  }
+}
+
+// Utility classes
+.text-truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+} 

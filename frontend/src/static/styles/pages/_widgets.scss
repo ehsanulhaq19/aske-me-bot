@@ -1,0 +1,254 @@
+@import '../abstracts/variables';
+@import '../abstracts/mixins';
+
+.widgets {
+  padding: $spacing-lg $spacing-xl;
+  background-color: $bg-secondary;
+  min-height: 100vh;
+
+  &__header {
+    @include flex-between;
+    margin-bottom: $spacing-xl;
+
+    &-title {
+      @include heading-1;
+    }
+
+    &-actions {
+      display: flex;
+      gap: $spacing-md;
+    }
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: $spacing-xl;
+    margin-bottom: $spacing-xl;
+  }
+
+  &__widget {
+    @include card;
+    transition: transform $transition-normal;
+
+    &:hover {
+      transform: translateY(-4px);
+    }
+
+    &-header {
+      @include flex-between;
+      margin-bottom: $spacing-lg;
+
+      &-title {
+        @include heading-2;
+      }
+
+      &-actions {
+        .widget-menu {
+          color: $text-secondary;
+          cursor: pointer;
+          transition: color $transition-fast;
+
+          &:hover {
+            color: $text-primary;
+          }
+        }
+      }
+    }
+
+    &-content {
+      position: relative;
+      min-height: 200px;
+
+      &.chart {
+        height: 300px;
+      }
+
+      &.weather {
+        text-align: center;
+        padding: $spacing-xl 0;
+
+        &-temp {
+          font-size: 48px;
+          font-weight: 600;
+          color: $text-primary;
+          margin-bottom: $spacing-md;
+        }
+
+        &-desc {
+          color: $text-secondary;
+          margin-bottom: $spacing-lg;
+        }
+
+        &-details {
+          display: flex;
+          justify-content: center;
+          gap: $spacing-xl;
+
+          &-item {
+            text-align: center;
+
+            i {
+              font-size: $font-size-xl;
+              color: $primary-color;
+              margin-bottom: $spacing-xs;
+            }
+
+            span {
+              display: block;
+              color: $text-secondary;
+              font-size: $font-size-sm;
+            }
+          }
+        }
+      }
+
+      &.tasks {
+        .task-list {
+          display: flex;
+          flex-direction: column;
+          gap: $spacing-sm;
+
+          &-item {
+            display: flex;
+            align-items: center;
+            gap: $spacing-md;
+            padding: $spacing-sm;
+            border-radius: $border-radius-md;
+            transition: background-color $transition-fast;
+
+            &:hover {
+              background-color: $bg-tertiary;
+            }
+
+            &-checkbox {
+              width: 20px;
+              height: 20px;
+              border: 2px solid $border-color;
+              border-radius: $border-radius-sm;
+              cursor: pointer;
+              transition: all $transition-fast;
+
+              &.checked {
+                background-color: $primary-color;
+                border-color: $primary-color;
+              }
+            }
+
+            &-content {
+              flex: 1;
+              
+              h4 {
+                color: $text-primary;
+                margin-bottom: $spacing-xs;
+              }
+
+              p {
+                color: $text-secondary;
+                font-size: $font-size-sm;
+              }
+            }
+
+            &-due {
+              color: $text-muted;
+              font-size: $font-size-sm;
+            }
+          }
+        }
+      }
+
+      &.calendar {
+        .calendar-grid {
+          display: grid;
+          grid-template-columns: repeat(7, 1fr);
+          gap: $spacing-xs;
+
+          &-header {
+            text-align: center;
+            color: $text-secondary;
+            font-size: $font-size-sm;
+            padding: $spacing-sm;
+          }
+
+          &-day {
+            @include flex-center;
+            aspect-ratio: 1;
+            border-radius: $border-radius-md;
+            cursor: pointer;
+            transition: all $transition-fast;
+
+            &:hover {
+              background-color: $bg-tertiary;
+            }
+
+            &.today {
+              background-color: $primary-color;
+              color: white;
+            }
+
+            &.has-event {
+              font-weight: 600;
+              color: $primary-color;
+            }
+
+            &.other-month {
+              color: $text-muted;
+            }
+          }
+        }
+      }
+    }
+
+    &-footer {
+      margin-top: $spacing-lg;
+      padding-top: $spacing-lg;
+      border-top: 1px solid $border-color;
+      @include flex-between;
+      color: $text-secondary;
+      font-size: $font-size-sm;
+
+      &-stats {
+        display: flex;
+        gap: $spacing-lg;
+
+        &-item {
+          display: flex;
+          align-items: center;
+          gap: $spacing-xs;
+
+          i {
+            color: $primary-color;
+          }
+        }
+      }
+    }
+  }
+
+  &__add-widget {
+    @include card;
+    @include flex-center;
+    min-height: 200px;
+    border: 2px dashed $border-color;
+    cursor: pointer;
+    transition: all $transition-fast;
+
+    &:hover {
+      border-color: $primary-color;
+      background-color: rgba($primary-color, 0.05);
+
+      .widgets__add-widget-icon {
+        color: $primary-color;
+      }
+    }
+
+    &-icon {
+      font-size: $font-size-2xl;
+      color: $text-muted;
+      margin-bottom: $spacing-sm;
+    }
+
+    &-text {
+      color: $text-secondary;
+    }
+  }
+} 

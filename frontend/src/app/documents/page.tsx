@@ -1,30 +1,15 @@
 'use client';
 
-import {
-  Box,
-  Button,
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-  IconButton,
-  useToast,
-  Heading,
-  Input,
-  FormControl,
-  FormLabel,
-  VStack,
-} from '@chakra-ui/react';
-import { FiTrash2, FiUpload } from 'react-icons/fi';
 import { useState, useRef } from 'react';
+import { FiTrash2, FiUpload, FiGrid, FiList } from 'react-icons/fi';
+import DashboardLayout from '@/layouts/DashboardLayout';
 
 interface Document {
   id: string;
   name: string;
   size: string;
   uploadedAt: string;
+  preview?: string;
 }
 
 export default function Documents() {
@@ -34,11 +19,12 @@ export default function Documents() {
       name: 'training-data.pdf',
       size: '2.5 MB',
       uploadedAt: new Date().toLocaleDateString(),
+      preview: '/document-preview.jpg'
     },
     // Add more mock data as needed
   ]);
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const toast = useToast();
 
   const handleUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
@@ -50,14 +36,10 @@ export default function Documents() {
       name: file.name,
       size: `${(file.size / (1024 * 1024)).toFixed(2)} MB`,
       uploadedAt: new Date().toLocaleDateString(),
+      preview: '/document-preview.jpg'
     }));
 
     setDocuments([...documents, ...newDocuments]);
-    toast({
-      title: 'Document uploaded',
-      status: 'success',
-      duration: 3000,
-    });
 
     // Reset file input
     if (fileInputRef.current) {
@@ -67,65 +49,118 @@ export default function Documents() {
 
   const handleDelete = (id: string) => {
     setDocuments(documents.filter(doc => doc.id !== id));
-    toast({
-      title: 'Document deleted',
-      status: 'success',
-      duration: 3000,
-    });
   };
 
   return (
-    <Box>
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={6}>
-        <Heading>Documents</Heading>
-        <FormControl width="auto">
-          <Input
-            type="file"
-            multiple
-            onChange={handleUpload}
-            ref={fileInputRef}
-            display="none"
-            id="file-upload"
-          />
-          <Button
-            as="label"
-            htmlFor="file-upload"
-            leftIcon={<FiUpload />}
-            colorScheme="blue"
-            cursor="pointer"
-          >
-            Upload Documents
-          </Button>
-        </FormControl>
-      </Box>
+    <DashboardLayout>
+      <div className="documents">
+        <div className="documents__header">
+          <h1 className="documents__header-title">Documents</h1>
+          <div className="documents__header-actions">
+            <button className="button-secondary" onClick={() => setViewMode('grid')}>
+              <FiGrid />
+            </button>
+            <button className="button-secondary" onClick={() => setViewMode('list')}>
+              <FiList />
+            </button>
+            <label className="button-primary" htmlFor="file-upload">
+              <FiUpload />
+              Upload Documents
+            </label>
+            <input
+              type="file"
+              id="file-upload"
+              multiple
+              onChange={handleUpload}
+              ref={fileInputRef}
+              style={{ display: 'none' }}
+            />
+          </div>
+        </div>
 
-      <Table variant="simple">
-        <Thead>
-          <Tr>
-            <Th>Name</Th>
-            <Th>Size</Th>
-            <Th>Uploaded</Th>
-            <Th>Actions</Th>
-          </Tr>
-        </Thead>
-        <Tbody>
-          {documents.map((doc) => (
-            <Tr key={doc.id}>
-              <Td>{doc.name}</Td>
-              <Td>{doc.size}</Td>
-              <Td>{doc.uploadedAt}</Td>
-              <Td>
-                <IconButton
-                  aria-label="Delete document"
-                  icon={<FiTrash2 />}
-                  colorScheme="red"
-                  onClick={() => handleDelete(doc.id)}
-                />
-              </Td>
-            </Tr>
-          ))}
-        </Tbody>
-      </Table>
-    </Box>
+        <div className="documents__filters">
+          <input
+            type="text"
+            className="documents__filters-search"
+            placeholder="Search documents..."
+          />
+          <select className="documents__filters-select">
+            <option value="">All Types</option>
+            <option value="pdf">PDF</option>
+            <option value="doc">Word</option>
+            <option value="xls">Excel</option>
+          </select>
+        </div>
+
+        {viewMode === 'grid' ? (
+          <div className="documents__grid">
+            {documents.map((doc) => (
+              <div key={doc.id} className="documents__card">
+                <div className="documents__card-preview">
+                  <img src={doc.preview} alt={doc.name} />
+                </div>
+                <div className="documents__card-info">
+                  <div className="documents__card-info-title">{doc.name}</div>
+                  <div className="documents__card-info-meta">
+                    <span>{doc.size}</span>
+                    <span>{doc.uploadedAt}</span>
+                  </div>
+                </div>
+                <div className="documents__card-actions">
+                  <button className="button-secondary">View</button>
+                  <button className="button-secondary" onClick={() => handleDelete(doc.id)}>
+                    <FiTrash2 />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="documents__list">
+            <div className="documents__list-header">
+              <span>Name</span>
+              <span>Size</span>
+              <span>Uploaded</span>
+              <span>Actions</span>
+            </div>
+            {documents.map((doc) => (
+              <div key={doc.id} className="documents__list-item">
+                <div className="documents__list-item-info">
+                  <div className="documents__list-item-icon">
+                    <FiUpload />
+                  </div>
+                  <div className="documents__list-item-details">
+                    <h3>{doc.name}</h3>
+                    <p>{doc.size}</p>
+                  </div>
+                </div>
+                <div className="documents__list-item-meta">
+                  <span>{doc.uploadedAt}</span>
+                </div>
+                <div className="documents__list-item-actions">
+                  <button className="button-secondary">View</button>
+                  <button className="button-secondary" onClick={() => handleDelete(doc.id)}>
+                    <FiTrash2 />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {documents.length === 0 && (
+          <div className="documents__empty">
+            <div className="documents__empty-icon">
+              <FiUpload />
+            </div>
+            <h2 className="documents__empty-text">No documents yet</h2>
+            <p className="documents__empty-subtext">Upload your first document to get started</p>
+            <label className="button-primary" htmlFor="file-upload">
+              Upload Document
+            </label>
+          </div>
+        )}
+      </div>
+    </DashboardLayout>
   );
 } 
