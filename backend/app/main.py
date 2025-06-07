@@ -1,7 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.router import router
-from app.db.database import engine, Base
 from app.schemas.user import UserCreate
 from app.repository.user_repository import create_admin_user
 from app.core.config import settings
@@ -26,10 +25,7 @@ app.add_middleware(
 app.include_router(router)
 
 @app.on_event("startup")
-def create_tables():
-    print("Checking and creating database tables if not exist...")
-    Base.metadata.create_all(bind=engine)
-    
+def setup_app():
     # Create an admin user if it doesn't exist
     user = UserCreate(
         name="Admin",
