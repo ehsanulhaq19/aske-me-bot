@@ -15,41 +15,28 @@
 
 // Card styles
 @mixin card {
-  background-color: $bg-primary;
+  background: $bg-primary;
   border-radius: $border-radius-lg;
   box-shadow: $shadow-sm;
   padding: $spacing-lg;
-  border: 1px solid $border-color;
-  transition: box-shadow $transition-normal;
-
-  &:hover {
-    box-shadow: $shadow-md;
-  }
 }
 
 // Button styles
 @mixin button-base {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: $spacing-sm $spacing-lg;
+  padding: $spacing-sm $spacing-md;
   border-radius: $border-radius-md;
   font-weight: 500;
-  transition: all $transition-fast;
   cursor: pointer;
-  
-  &:disabled {
-    opacity: 0.7;
-    cursor: not-allowed;
-  }
+  @include transition;
 }
 
 @mixin button-primary {
   @include button-base;
   background-color: $primary-color;
-  color: white;
-  
-  &:hover:not(:disabled) {
+  color: $text-light;
+  border: none;
+
+  &:hover {
     background-color: $primary-dark;
   }
 }
@@ -59,8 +46,8 @@
   background-color: $bg-secondary;
   color: $text-secondary;
   border: 1px solid $border-color;
-  
-  &:hover:not(:disabled) {
+
+  &:hover {
     background-color: $bg-tertiary;
   }
 }
@@ -87,7 +74,7 @@
 }
 
 // Grid layout
-@mixin grid-layout($columns: 1, $gap: $spacing-md) {
+@mixin grid-layout($columns, $gap) {
   display: grid;
   grid-template-columns: repeat($columns, 1fr);
   gap: $gap;
@@ -95,7 +82,9 @@
 
 // Responsive breakpoints
 @mixin mobile {
-  @media (max-width: 640px) { @content; }
+  @media (max-width: $breakpoint-sm) {
+    @content;
+  }
 }
 
 @mixin tablet {

@@ -1,131 +1,146 @@
 'use client';
 
-import { useState } from 'react';
-import { FiEdit2, FiTrash2, FiPlus, FiMessageSquare, FiSettings } from 'react-icons/fi';
+import React, { ReactNode, useState, useEffect } from 'react';
+import { FiEdit2, FiTrash2, FiPlus, FiMessageSquare } from 'react-icons/fi';
 import DashboardLayout from '@/layouts/DashboardLayout';
-import styles from '@/static/styles/pages/widgets.module.css';
+import WidgetModal, { WidgetFormData } from '@/components/modal/WidgetModal';
+import { widgetsApi, Widget } from '@/api/widgets';
 
-interface Chatbot {
-  id: string;
-  name: string;
-  description: string;
-  status: 'active' | 'inactive';
-  createdAt: string;
-  lastActive: string;
-  messageCount: number;
-  avatar?: string;
+interface LayoutProps {
+  children: ReactNode;
 }
 
-export default function Widgets() {
-  const [chatbots] = useState<Chatbot[]>([
-    {
-      id: '1',
-      name: 'Customer Support Bot',
-      description: 'Handles customer inquiries and support tickets',
-      status: 'active',
-      createdAt: '2024-03-15',
-      lastActive: '2 hours ago',
-      messageCount: 1234,
-      avatar: '/bot1.jpg'
-    },
-    {
-      id: '2',
-      name: 'Sales Assistant',
-      description: 'Helps with product recommendations and sales',
-      status: 'active',
-      createdAt: '2024-03-10',
-      lastActive: '5 minutes ago',
-      messageCount: 856,
-      avatar: '/bot2.jpg'
+const Widgets: React.FC = () => {
+  const [widgets, setWidgets] = useState<Widget[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
+  const [itemsPerPage] = useState(10);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingWidget, setEditingWidget] = useState<Widget | null>(null);
+
+  const fetchWidgets = async () => {
+    try {
+      setIsLoading(true);
+      const data = await widgetsApi.getAll(currentPage, itemsPerPage);
+      setWidgets(data.items);
+      setTotalItems(data.total);
+    } catch (error) {
+      console.error('Error fetching widgets:', error);
+    } finally {
+      setIsLoading(false);
     }
-  ]);
+  };
+
+  useEffect(() => {
+    fetchWidgets();
+  }, [currentPage, itemsPerPage]);
 
   const handleAddChatbot = () => {
-    // Add chatbot logic
+    setEditingWidget(null);
+    setIsModalOpen(true);
   };
 
   const handleEditChatbot = (id: string) => {
-    // Edit chatbot logic
+    const widget = widgets.find((w: Widget) => w.id === id);
+    if (widget) {
+      setEditingWidget(widget);
+      setIsModalOpen(true);
+    }
   };
 
-  const handleDeleteChatbot = (id: string) => {
-    // Delete chatbot logic
+  const handleDeleteChatbot = async (id: string) => {
+    try {
+      await widgetsApi.delete(id);
+      fetchWidgets(); // Refresh the list
+    } catch (error) {
+      console.error('Error deleting widget:', error);
+    }
   };
 
-  return (
-    <DashboardLayout>
-      <div className={styles.container}>
-        <div className={styles.header}>
-          <h1 className={styles.title}>Chatbots</h1>
-          <div className={styles.actions}>
-            <button className={`${styles.footerButton} ${styles.primaryButton}`} onClick={handleAddChatbot}>
-              <FiPlus /> Create New Chatbot
-            </button>
-          </div>
+  const handleModalSubmit = async (data: WidgetFormData) => {
+    try {
+      const fileIds = data.fileIds.map((id: string) => parseInt(id));
+      const widgetData = {
+        name: data.name,
+        description: data.description || '',
+        type: data.type,
+        file_ids: fileIds,
+        prompt: data.prompt || ''
+      };
+
+      await widgetsApi.register(widgetData);
+      setIsModalOpen(false);
+      fetchWidgets();
+    } catch (error) {
+      console.error('Error registering widget:', error);
+    }
+  };
+
+  const content = (
+    <div className="widgets">
+      <div className="widgets__header">
+        <h1 className="widgets__header-title">Chatbots</h1>
+        <div className="widgets__header-actions">
+          <button className="button button--primary" onClick={handleAddChatbot}>
+            <FiPlus className="button__icon" /> Create New Chatbot
+          </button>
         </div>
+      </div>
 
-        <div className={styles.grid}>
-          {chatbots.map((chatbot) => (
-            <div key={chatbot.id} className={styles.chatbot}>
-              <div className={styles.chatbotHeader}>
-                <div className={styles.avatar}>
-                  <img src={chatbot.avatar || '/default-bot.jpg'} alt={chatbot.name} />
-                  <span className={`${styles.statusIndicator} ${styles[chatbot.status]}`} />
+      {isLoading ? (
+        <div className="widgets__loading">Loading...</div>
+      ) : (
+        <div className="widgets__grid">
+          {widgets.map((widget: Widget) => (
+            <div key={widget.id} className="chatbot">
+              <div className="chatbot__header">
+                <img src="/static/images/logo.svg" alt={widget.name} className="chatbot__avatar" />
+                <div className="chatbot__info">
+                  <h3 className="chatbot__name">{widget.name}</h3>
+                  <p className="chatbot__description">{widget.description}</p>
                 </div>
-                <div className={styles.info}>
-                  <h2 className={styles.name}>{chatbot.name}</h2>
-                  <p className={styles.description}>{chatbot.description}</p>
-                </div>
-                <div className={styles.actions}>
-                  <button 
-                    className={styles.actionButton}
-                    onClick={() => handleEditChatbot(chatbot.id)}
-                    title="Edit Chatbot"
+                <div className="chatbot__actions">
+                  <button
+                    className="chatbot__action-btn"
+                    onClick={() => handleEditChatbot(widget.id)}
                   >
                     <FiEdit2 />
                   </button>
-                  <button 
-                    className={styles.actionButton}
-                    onClick={() => handleDeleteChatbot(chatbot.id)}
-                    title="Delete Chatbot"
+                  <button
+                    className="chatbot__action-btn"
+                    onClick={() => handleDeleteChatbot(widget.id)}
                   >
                     <FiTrash2 />
                   </button>
                 </div>
               </div>
-
-              <div className={styles.stats}>
-                <div className={styles.stat}>
-                  <FiMessageSquare className={styles.statIcon} />
-                  <span>{chatbot.messageCount.toLocaleString()} messages</span>
+              <div className="chatbot__footer">
+                <div className="chatbot__stats">
+                  <div className="chatbot__stat">
+                    <span>Type: {widget.type}</span>
+                  </div>
                 </div>
-                <div className={styles.stat}>
-                  <span>Last active: {chatbot.lastActive}</span>
-                </div>
-              </div>
-
-              <div className={styles.footer}>
-                <button className={`${styles.footerButton} ${styles.primaryButton}`}>
-                  <FiMessageSquare /> Open Chat
-                </button>
-                <button className={`${styles.footerButton} ${styles.secondaryButton}`}>
-                  <FiSettings /> Settings
-                </button>
               </div>
             </div>
           ))}
-
-          <button className={styles.addChatbot} onClick={handleAddChatbot}>
-            <div className={styles.addIcon}>
-              <FiPlus />
-            </div>
-            <div className={styles.addText}>Create New Chatbot</div>
-            <div className={styles.addSubtext}>
-              Add a new chatbot to handle customer interactions
-            </div>
-          </button>
         </div>
-      </div>
-    </DashboardLayout>
+      )}
+
+      <WidgetModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSubmit={handleModalSubmit}
+        initialData={editingWidget ? {
+          name: editingWidget.name,
+          type: editingWidget.type,
+          selectedFiles: []
+        } : undefined}
+      />
+    </div>
   );
-} 
+
+  return <DashboardLayout>{content}</DashboardLayout>;
+};
+
+export default Widgets; 

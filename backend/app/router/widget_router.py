@@ -37,7 +37,6 @@ def list_widgets(
         raise HTTPException(status_code=403, detail="Forbidden")
     skip = (page - 1) * size
     widgets, total = widget_repository.get_widgets_paginated(skip, size)
-    
     return {
         "items": widgets,
         "total": total,

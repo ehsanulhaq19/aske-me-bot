@@ -1,40 +1,43 @@
+@import '../abstracts/variables';
+@import '../abstracts/mixins';
+
 .error-boundary {
   &__container {
     display: flex;
     align-items: center;
     justify-content: center;
     min-height: 100vh;
-    background-color: #f3f4f6;
+    background-color: $bg-secondary;
   }
 
   &__content {
-    padding: 2rem;
-    background-color: white;
-    border-radius: 0.5rem;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    padding: $spacing-xl;
+    background-color: $bg-primary;
+    border-radius: $border-radius-lg;
+    box-shadow: $shadow-md;
   }
 
   &__title {
-    font-size: 1.5rem;
+    font-size: $font-size-xl;
     font-weight: 700;
-    color: #dc2626;
-    margin-bottom: 1rem;
+    color: $error-color;
+    margin-bottom: $spacing-md;
   }
 
   &__message {
-    color: #4b5563;
-    margin-bottom: 1rem;
+    color: $text-secondary;
+    margin-bottom: $spacing-md;
   }
 
   &__button {
-    padding: 0.5rem 1rem;
-    background-color: #3b82f6;
-    color: white;
-    border-radius: 0.25rem;
-    transition: background-color 0.2s;
+    padding: $spacing-sm $spacing-md;
+    background-color: $primary-color;
+    color: $text-light;
+    border-radius: $border-radius-md;
+    transition: background-color $transition-fast;
 
     &:hover {
-      background-color: #2563eb;
+      background-color: $primary-dark;
     }
   }
 } 

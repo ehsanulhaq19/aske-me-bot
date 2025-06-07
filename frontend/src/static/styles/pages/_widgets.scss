@@ -2,16 +2,18 @@
 @import '../abstracts/mixins';
 
 .widgets {
-  padding: $spacing-lg $spacing-xl;
-  background-color: $bg-secondary;
-  min-height: 100vh;
+  padding: $spacing-lg;
 
   &__header {
-    @include flex-between;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: $spacing-xl;
 
     &-title {
-      @include heading-1;
+      font-size: 1.875rem;
+      font-weight: 600;
+      color: $text-primary;
     }
 
     &-actions {
@@ -22,9 +24,8 @@
 
   &__grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: $spacing-xl;
-    margin-bottom: $spacing-xl;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: $spacing-lg;
   }
 
   &__widget {
@@ -250,5 +251,204 @@
     &-text {
       color: $text-secondary;
     }
+  }
+}
+
+.button {
+  padding: $spacing-sm $spacing-md;
+  border-radius: $border-radius-md;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  transition: all 0.2s ease;
+  cursor: pointer;
+
+  &--primary {
+    background-color: $primary-color;
+    color: white;
+    border: 1px solid $primary-color;
+
+    &:hover {
+      background-color: darken($primary-color, 5%);
+    }
+  }
+
+  &__icon {
+    font-size: 1.25rem;
+  }
+}
+
+.chatbot {
+  border: 1px solid $border-color;
+  background: white;
+  border-radius: $border-radius-lg;
+  box-shadow: $shadow-sm;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: $shadow-md;
+  }
+
+  &__header {
+    padding: $spacing-lg;
+    display: flex;
+    align-items: flex-start;
+    gap: $spacing-md;
+    border-bottom: 1px solid $border-color;
+  }
+
+  &__avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: $border-radius-full;
+    object-fit: cover;
+  }
+
+  &__info {
+    flex: 1;
+  }
+
+  &__name {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: $text-primary;
+    margin-bottom: $spacing-xs;
+  }
+
+  &__description {
+    color: $text-secondary;
+    font-size: 0.875rem;
+    line-height: 1.4;
+  }
+
+  &__actions {
+    display: flex;
+    gap: $spacing-sm;
+  }
+
+  &__action-btn {
+    background: none;
+    border: none;
+    padding: $spacing-xs;
+    color: $text-secondary;
+    cursor: pointer;
+    border-radius: $border-radius-sm;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background-color: $bg-secondary;
+      color: $primary-color;
+    }
+  }
+
+  &__footer {
+    padding: $spacing-md $spacing-lg;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: $bg-secondary;
+  }
+
+  &__stats {
+    display: flex;
+    gap: $spacing-lg;
+  }
+
+  &__stat {
+    display: flex;
+    align-items: center;
+    gap: $spacing-xs;
+    color: $text-secondary;
+    font-size: 0.875rem;
+
+    svg {
+      color: $primary-color;
+    }
+  }
+
+  &__status {
+    padding: $spacing-xs $spacing-sm;
+    border-radius: $border-radius-full;
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: capitalize;
+
+    &.active {
+      background-color: $success-light;
+      color: $success-color;
+    }
+
+    &.inactive {
+      background-color: $danger-light;
+      color: $danger-color;
+    }
+  }
+}
+
+.chatbot-add {
+  background: $bg-primary;
+  border: 2px dashed $border-color;
+  border-radius: $border-radius-lg;
+  padding: $spacing-xl;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-lg;
+  min-height: 280px;
+  cursor: pointer;
+  transition: all $transition-fast;
+  backdrop-filter: blur(10px);
+
+  &:hover {
+    border-color: $primary-color;
+    background-color: rgba($primary-color, 0.05);
+    transform: translateY(-4px);
+
+    .chatbot-add__icon {
+      color: $text-light;
+      background-color: $primary-color;
+      transform: scale(1.1) rotate(90deg);
+    }
+
+    .chatbot-add__text {
+      color: $primary-color;
+    }
+  }
+
+  &__icon-wrapper {
+    width: 48px;
+    height: 48px;
+    border-radius: $border-radius-lg;
+    background-color: $bg-tertiary;
+    color: $text-secondary;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all $transition-fast;
+  }
+
+  &__icon {
+    font-size: $font-size-xl;
+    transition: all $transition-fast;
+  }
+
+  &__text {
+    font-size: $font-size-lg;
+    font-weight: 600;
+    color: $text-secondary;
+    text-align: center;
+    transition: color $transition-fast;
+  }
+
+  &__subtext {
+    font-size: $font-size-sm;
+    color: $text-muted;
+    text-align: center;
+    max-width: 240px;
+    line-height: 1.5;
   }
 } 

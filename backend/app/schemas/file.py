@@ -9,3 +9,12 @@ class FileMetaSchema(BaseModel):
     model_config = {
         "from_attributes": True
     }
+    
+class FileOut(FileMetaSchema):
+    id: int
+    filename: str
+    path: str
+    
+    model_config = {
+        "from_attributes": True
+    }

@@ -2,6 +2,7 @@ from fastapi import HTTPException
 from app.db.session import get_db
 from app.models.file import File
 from app.schemas.file import FileMetaSchema
+from typing import List, Tuple
 
 class MetadataRepository:
     def save_file_metadata(self, name: str, path: str, document_ids: str = None):
@@ -13,10 +14,11 @@ class MetadataRepository:
         with get_db() as db:
             db.query(File).filter(File.id == id).delete()
 
-    def list_files(self):
+    def list_files(self, skip: int = 0, limit: int = 10) -> Tuple[List[FileMetaSchema], int]:
         with get_db() as db:
-            files = db.query(File).all()
-            return [FileMetaSchema.from_orm(file) for file in files]
+            total = db.query(File).count()
+            files = db.query(File).offset(skip).limit(limit).all()
+            return [FileMetaSchema.from_orm(file) for file in files], total
 
     def get_file(self, name: str):
         with get_db() as db:

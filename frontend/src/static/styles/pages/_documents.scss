@@ -59,7 +59,7 @@
 
     &-preview {
       width: 100%;
-      height: 160px;
+      max-height: 200px;
       background-color: $bg-tertiary;
       border-radius: $border-radius-md;
       margin-bottom: $spacing-md;

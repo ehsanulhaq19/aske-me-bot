@@ -1,7 +1,7 @@
 from fastapi import APIRouter, UploadFile, File, Query, Response, status, Depends
 from app.services import file_service, qa_service
 from app.schemas.file import FileMetaSchema
-from typing import List
+from typing import List, Dict
 from app.repository.file_repository import MetadataRepository
 from app.models.user import User
 from app.core.security import get_current_user
@@ -31,9 +31,21 @@ def delete(file_id: int, current_user: User = Depends(get_current_user)):
     metadata_repository.remove_file_metadata(file_id)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
-@router.get("/", response_model=List[FileMetaSchema])
-def list_files(current_user: User = Depends(get_current_user)):
-    return metadata_repository.list_files()
+@router.get("/", response_model=Dict[str, object])
+def list_files(
+    page: int = Query(1, ge=1, description="Page number"),
+    page_size: int = Query(10, ge=1, le=100, description="Number of items per page"),
+    current_user: User = Depends(get_current_user)
+):
+    skip = (page - 1) * page_size
+    files, total = metadata_repository.list_files(skip=skip, limit=page_size)
+    return {
+        "items": files,
+        "total": total,
+        "page": page,
+        "page_size": page_size,
+        "total_pages": (total + page_size - 1) // page_size
+    }
 
 @router.post("/ask")
 def ask(query: str, current_user: User = Depends(get_current_user)):

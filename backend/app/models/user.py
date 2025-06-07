@@ -17,3 +17,4 @@ class User(Base):
 
     # Relationship
     files = relationship("File", secondary="user_files", back_populates="users")
+    widget = relationship("Widget", back_populates="user")

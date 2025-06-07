@@ -37,9 +37,9 @@ export default function Documents() {
   const fetchDocuments = async () => {
     try {
       const response = await documentsApi.getAll(currentPage, itemsPerPage);
-      setDocuments(response);
-      // setTotalItems(response.total);
-      setFiles(response);
+      setDocuments(response.items);
+      setTotalItems(response.total);
+      setFiles(response.items);
     } catch (error) {
       console.error('Error fetching documents:', error);
     }
@@ -171,7 +171,7 @@ export default function Documents() {
                   </div>
                 </div>
                 <div className="documents__card-actions">
-                  <button className="button-secondary">View</button>
+                  <button className="button-secondary"></button>
                   <button className="button-secondary" onClick={() => openDeleteModal(doc.id)}>
                     <FiTrash2 />
                   </button>

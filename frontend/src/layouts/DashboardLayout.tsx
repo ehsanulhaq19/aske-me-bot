@@ -1,13 +1,14 @@
 'use client';
 
+import React, { ReactNode } from 'react';
 import { Box } from '@chakra-ui/react';
 import Sidebar from '@/components/Sidebar';
 
-interface DashboardLayoutProps {
-  children: React.ReactNode;
+export interface DashboardLayoutProps {
+  children: ReactNode;
 }
 
-export default function DashboardLayout({ children }: DashboardLayoutProps) {
+const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   return (
     <Box display="flex" minH="100vh">
       <Sidebar />
@@ -24,4 +25,6 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       </Box>
     </Box>
   );
-} 
+};
+
+export default DashboardLayout; 

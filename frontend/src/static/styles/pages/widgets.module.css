@@ -1,11 +1,11 @@
 .container {
   padding: 2rem;
   min-height: 100vh;
-  background-color: var(--bg-gradient-start);
+  background-color: #ffffff;
   background-image: linear-gradient(
     135deg,
-    var(--bg-gradient-start) 0%,
-    var(--bg-gradient-end) 100%
+    #ffffff 0%,
+    #f8fafc 100%
   );
 }
 
@@ -19,7 +19,7 @@
 .title {
   font-size: 2rem;
   font-weight: 700;
-  color: var(--text-primary);
+  color: #0f172a;
   display: flex;
   align-items: center;
   gap: 1rem;
@@ -32,34 +32,34 @@
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-  gap: 2rem;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
   margin-bottom: 2rem;
 }
 
 .chatbot {
-  background: var(--bg-card);
-  border-radius: 1rem;
-  border: 1px solid var(--border-color);
+  background: #ffffff;
+  border-radius: 0.75rem;
+  border: 1px solid #e2e8f0;
   overflow: hidden;
   transition: all 0.3s ease;
   position: relative;
   backdrop-filter: blur(10px);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
 }
 
 .chatbot:hover {
   transform: translateY(-4px);
-  border-color: var(--primary-color);
-  box-shadow: 0 12px 48px rgba(var(--primary-rgb), 0.2);
+  border-color: #2563eb;
+  box-shadow: 0 12px 48px rgba(37, 99, 235, 0.2);
 }
 
 .chatbotHeader {
-  padding: 1.5rem;
+  padding: 1.25rem;
   background: linear-gradient(
     135deg,
-    var(--primary-color) 0%,
-    rgba(var(--primary-rgb), 0.8) 100%
+    #2563eb 0%,
+    rgba(37, 99, 235, 0.8) 100%
   );
   color: white;
   position: relative;
@@ -72,11 +72,11 @@
 }
 
 .avatar img {
-  width: 64px;
-  height: 64px;
-  border-radius: 1rem;
+  width: 48px;
+  height: 48px;
+  border-radius: 0.75rem;
   object-fit: cover;
-  border: 3px solid var(--bg-card);
+  border: 2px solid #ffffff;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
@@ -150,13 +150,13 @@
 }
 
 .stats {
-  padding: 1.25rem 1.5rem;
-  background-color: var(--bg-card-secondary);
+  padding: 1rem 1.25rem;
+  background-color: #f8fafc;
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 1rem;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid #e2e8f0;
 }
 
 .stat {
@@ -166,19 +166,19 @@
   padding: 0.5rem 0.75rem;
   border-radius: 0.5rem;
   transition: all 0.2s ease;
-  color: var(--text-secondary);
+  color: #475569;
 }
 
 .stat:hover {
-  background-color: var(--bg-hover);
+  background-color: #f1f5f9;
 }
 
 .statIcon {
-  color: var(--primary-color);
+  color: #2563eb;
 }
 
 .footer {
-  padding: 1.5rem;
+  padding: 1.25rem;
   display: flex;
   gap: 1rem;
 }
@@ -197,30 +197,30 @@
 }
 
 .primaryButton {
-  background-color: var(--primary-color);
+  background-color: #2563eb;
   color: white;
   border: none;
 }
 
 .primaryButton:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(var(--primary-rgb), 0.2);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
 }
 
 .secondaryButton {
-  background-color: var(--bg-card-secondary);
-  color: var(--text-primary);
-  border: 1px solid var(--border-color);
+  background-color: #f8fafc;
+  color: #0f172a;
+  border: 1px solid #e2e8f0;
 }
 
 .secondaryButton:hover {
   transform: translateY(-2px);
-  border-color: var(--primary-color);
+  border-color: #2563eb;
 }
 
 .addChatbot {
-  background: var(--bg-card);
-  border: 2px dashed var(--border-color);
+  background: #ffffff;
+  border: 2px dashed #e2e8f0;
   border-radius: 1rem;
   padding: 2.5rem;
   display: flex;
@@ -235,8 +235,8 @@
 }
 
 .addChatbot:hover {
-  border-color: var(--primary-color);
-  background-color: rgba(var(--primary-rgb), 0.05);
+  border-color: #2563eb;
+  background-color: rgba(37, 99, 235, 0.05);
   transform: translateY(-4px);
 }
 
@@ -244,8 +244,8 @@
   width: 64px;
   height: 64px;
   border-radius: 1rem;
-  background-color: var(--bg-hover);
-  color: var(--text-secondary);
+  background-color: #f1f5f9;
+  color: #475569;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -253,7 +253,7 @@
 }
 
 .addChatbot:hover .addIcon {
-  background-color: var(--primary-color);
+  background-color: #2563eb;
   color: white;
   transform: scale(1.1) rotate(90deg);
 }
@@ -261,18 +261,18 @@
 .addText {
   font-size: 1.125rem;
   font-weight: 600;
-  color: var(--text-secondary);
+  color: #475569;
   text-align: center;
   transition: color 0.2s ease;
 }
 
 .addChatbot:hover .addText {
-  color: var(--primary-color);
+  color: #2563eb;
 }
 
 .addSubtext {
   font-size: 0.9375rem;
-  color: var(--text-tertiary);
+  color: #94a3b8;
   text-align: center;
   max-width: 240px;
   line-height: 1.5;

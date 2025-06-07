@@ -1,13 +1,9 @@
 import axiosInstance from './axios';
-import config from '@/config';
 
 export interface Document {
   id: string;
-  name: string;
-  size: number;
-  mimeType: string;
-  url: string;
-  uploadedAt: string;
+  filename: string;
+  path: string;
   status: 'pending' | 'completed' | 'error';
 }
 
@@ -21,11 +17,10 @@ export interface PaginatedResponse<T> {
 export const documentsApi = {
   // Get all documents with pagination
   getAll: async (page: number = 1, itemsPerPage: number = 10) => {
-    console.log("-----files=====")
     const response = await axiosInstance.get<PaginatedResponse<Document>>('/files', {
       params: {
         page,
-        items_per_page: itemsPerPage
+        page_size: itemsPerPage
       }
     });
     return response.data;
