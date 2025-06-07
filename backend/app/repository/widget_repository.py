@@ -5,6 +5,7 @@ from app.schemas.widget import WidgetCreate, WidgetResponse
 from app.core.security import hash_password
 from app.db.session import get_db
 from typing import List, Tuple
+from sqlalchemy.orm import joinedload
 
 def create_widget(widget: WidgetCreate) -> WidgetResponse:
     with get_db() as db:
@@ -42,6 +43,10 @@ def create_widget(widget: WidgetCreate) -> WidgetResponse:
         db.commit()
         db.refresh(db_widget_user)
         
+        widget_model = db.query(Widget).options(
+            joinedload(Widget.user).joinedload(User.files)
+        ).filter(Widget.id == widget_model.id).first()
+        
         return WidgetResponse.from_orm(widget_model)
 
 def delete_widget(widget_id: int) -> bool:
@@ -66,41 +71,52 @@ def delete_widget(widget_id: int) -> bool:
     
 def get_widget(widget_id: int) -> WidgetResponse:
     with get_db() as db:
-        widget = db.query(Widget).filter(Widget.id == widget_id).first()
+        widget = db.query(Widget).options(
+            joinedload(Widget.user).joinedload(User.files)
+        ).filter(Widget.id == widget_id).first()
         if not widget:
             return None
+        
         return WidgetResponse.from_orm(widget)
     
 def update_widget(widget_id: int, widget: WidgetCreate) -> WidgetResponse:
     with get_db() as db:
-        widget = db.query(Widget).filter(Widget.id == widget_id).first()
-        if not widget:
+        db_widget = db.query(Widget).filter(Widget.id == widget_id).first()
+        if not db_widget:
             return None
+            
         if widget.name:
-            widget.name = widget.name
+            db_widget.name = widget.name
         if widget.description:
-            widget.description = widget.description
+            db_widget.description = widget.description
         if widget.type:
-            widget.type = widget.type
-        if widget.file_ids:
-            widget.files = []
+            db_widget.type = widget.type
+        if widget.prompt:
+            db_widget.prompt = widget.prompt
+            
+        # Update files
+        if widget.file_ids is not None:
+            db_widget.user.files = []
             for file_id in widget.file_ids:
                 db_file = db.query(File).filter(File.id == file_id).first()
                 if db_file:
-                    widget.files.append(db_file)
-        else:
-            widget.files = []
-        if widget.prompt:
-            widget.prompt = widget.prompt
+                    db_widget.user.files.append(db_file)
         
         db.commit()
-        db.refresh(widget)
+        
+        # Refresh widget with user files
+        db_widget = db.query(Widget).options(
+            joinedload(Widget.user).joinedload(User.files)
+        ).filter(Widget.id == widget_id).first()
+        
+        return WidgetResponse.from_orm(db_widget)
 
 def get_widgets_paginated(skip: int, limit: int) -> Tuple[List[WidgetResponse], int]:
     with get_db() as db:
         total = db.query(Widget).count()
         
         widgets = db.query(Widget)\
+            .options(joinedload(Widget.user).joinedload(User.files))\
             .offset(skip)\
             .limit(limit)\
             .all()

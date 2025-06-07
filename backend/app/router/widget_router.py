@@ -72,3 +72,13 @@ def disassociate_file_from_widget(
     if user_file_repository.delete_user_file(widget_id, file_id):
         return {"message": "File disassociated from widget successfully"}
     raise HTTPException(status_code=404, detail="Association between widget and file not found") 
+
+@router.put("/{widget_id}")
+def update_widget(
+    widget_id: int,
+    widget: WidgetCreate,
+    current_user: User = Depends(get_current_user)
+):
+    if not is_admin_or_normal_user(current_user):
+        raise HTTPException(status_code=403, detail="Forbidden")
+    return widget_repository.update_widget(widget_id, widget)

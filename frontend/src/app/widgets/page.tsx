@@ -4,6 +4,7 @@ import React, { ReactNode, useState, useEffect } from 'react';
 import { FiEdit2, FiTrash2, FiPlus, FiMessageSquare } from 'react-icons/fi';
 import DashboardLayout from '@/layouts/DashboardLayout';
 import WidgetModal, { WidgetFormData } from '@/components/modal/WidgetModal';
+import ConfirmationModal from '@/components/modal/ConfirmationModal';
 import { widgetsApi, Widget } from '@/api/widgets';
 
 interface LayoutProps {
@@ -11,19 +12,27 @@ interface LayoutProps {
 }
 
 const Widgets: React.FC = () => {
-  const [widgets, setWidgets] = useState<Widget[]>([]);
+  const [widgets, setWidgets] = useState<{ [key: string]: Widget }>({});
   const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
   const [itemsPerPage] = useState(10);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingWidget, setEditingWidget] = useState<Widget | null>(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [widgetToDelete, setWidgetToDelete] = useState<string | null>(null);
 
   const fetchWidgets = async () => {
     try {
       setIsLoading(true);
       const data = await widgetsApi.getAll(currentPage, itemsPerPage);
-      setWidgets(data.items);
+      const widgetsList = widgets
+        
+      data.items.forEach(item => {
+        widgetsList[item.id] = item;
+      })
+
+      setWidgets(widgetsList);
       setTotalItems(data.total);
     } catch (error) {
       console.error('Error fetching widgets:', error);
@@ -42,20 +51,33 @@ const Widgets: React.FC = () => {
   };
 
   const handleEditChatbot = (id: string) => {
-    const widget = widgets.find((w: Widget) => w.id === id);
+    const widget = widgets[id];
     if (widget) {
       setEditingWidget(widget);
       setIsModalOpen(true);
     }
   };
 
-  const handleDeleteChatbot = async (id: string) => {
-    try {
-      await widgetsApi.delete(id);
-      fetchWidgets(); // Refresh the list
-    } catch (error) {
-      console.error('Error deleting widget:', error);
+  const handleDeleteClick = (id: string) => {
+    setWidgetToDelete(id);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (widgetToDelete) {
+      try {
+        await widgetsApi.delete(widgetToDelete);
+        setIsDeleteModalOpen(false);
+        setWidgetToDelete(null);
+        fetchWidgets(); 
+      } catch (error) {
+        console.error('Error deleting widget:', error);
+      }
     }
+  };
+
+  const handleChatClick = (id: string) => {
+    window.location.href = `/chat/${id}`;
   };
 
   const handleModalSubmit = async (data: WidgetFormData) => {
@@ -69,9 +91,14 @@ const Widgets: React.FC = () => {
         prompt: data.prompt || ''
       };
 
-      await widgetsApi.register(widgetData);
-      setIsModalOpen(false);
+      if (editingWidget) {
+        await widgetsApi.update(editingWidget.id, widgetData);
+      } else {
+        await widgetsApi.register(widgetData);
+      }
       fetchWidgets();
+      setIsModalOpen(false);
+
     } catch (error) {
       console.error('Error registering widget:', error);
     }
@@ -92,7 +119,7 @@ const Widgets: React.FC = () => {
         <div className="widgets__loading">Loading...</div>
       ) : (
         <div className="widgets__grid">
-          {widgets.map((widget: Widget) => (
+          {Object.values(widgets)?.map((widget: Widget) => (
             <div key={widget.id} className="chatbot">
               <div className="chatbot__header">
                 <img src="/static/images/logo.svg" alt={widget.name} className="chatbot__avatar" />
@@ -103,13 +130,19 @@ const Widgets: React.FC = () => {
                 <div className="chatbot__actions">
                   <button
                     className="chatbot__action-btn"
+                    onClick={() => handleChatClick(widget.id)}
+                  >
+                    <FiMessageSquare />
+                  </button>
+                  <button
+                    className="chatbot__action-btn"
                     onClick={() => handleEditChatbot(widget.id)}
                   >
                     <FiEdit2 />
                   </button>
                   <button
                     className="chatbot__action-btn"
-                    onClick={() => handleDeleteChatbot(widget.id)}
+                    onClick={() => handleDeleteClick(widget.id)}
                   >
                     <FiTrash2 />
                   </button>
@@ -120,6 +153,10 @@ const Widgets: React.FC = () => {
                   <div className="chatbot__stat">
                     <span>Type: {widget.type}</span>
                   </div>
+                  <div className="chatbot__stat">
+                    <FiMessageSquare />
+                    <span>{widget.conversations_count || 0} conversations</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -127,15 +164,34 @@ const Widgets: React.FC = () => {
         </div>
       )}
 
-      <WidgetModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onSubmit={handleModalSubmit}
-        initialData={editingWidget ? {
-          name: editingWidget.name,
-          type: editingWidget.type,
-          selectedFiles: []
-        } : undefined}
+      {
+        isModalOpen && (
+          <WidgetModal
+            isOpen={isModalOpen}
+            onClose={() => setIsModalOpen(false)}
+            onSubmit={handleModalSubmit}
+            initialData={editingWidget ? {
+              name: editingWidget.name,
+              type: editingWidget.type,
+              fileIds: editingWidget.files.map((file: File) => file.id),
+              prompt: editingWidget.prompt,
+              description: editingWidget.description
+            } : undefined}
+          />
+        )
+      }
+
+      <ConfirmationModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => {
+          setIsDeleteModalOpen(false);
+          setWidgetToDelete(null);
+        }}
+        onConfirm={handleDeleteConfirm}
+        title="Delete Chatbot"
+        message="Are you sure you want to delete this chatbot? This action cannot be undone."
+        confirmText="Delete"
+        cancelText="Cancel"
       />
     </div>
   );

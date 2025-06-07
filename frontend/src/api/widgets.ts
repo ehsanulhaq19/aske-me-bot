@@ -7,6 +7,7 @@ export interface Widget {
   description: string;
   type: string;
   files: Document[];
+  conversations_count?: number;
 }
 export interface CreateWidgetData {
   name: string;
@@ -53,6 +54,12 @@ export const widgetsApi = {
     const response = await axiosInstance.delete(
       `/widgets/${widgetId}/files/${fileId}`
     );
+    return response.data;
+  },
+
+  // Update a widget
+  update: async (id: string, data: CreateWidgetData) => {
+    const response = await axiosInstance.put<Widget>(`/widgets/${id}`, data);
     return response.data;
   },
 }; 
