@@ -151,11 +151,11 @@ const Widgets: React.FC = () => {
               <div className="chatbot__footer">
                 <div className="chatbot__stats">
                   <div className="chatbot__stat">
-                    <span>Type: {widget.type}</span>
+                    <span>{widget.type}</span>
                   </div>
                   <div className="chatbot__stat">
                     <FiMessageSquare />
-                    <span>{widget.conversations_count || 0} conversations</span>
+                    <span>{widget.conversations_count || 0}</span>
                   </div>
                 </div>
               </div>

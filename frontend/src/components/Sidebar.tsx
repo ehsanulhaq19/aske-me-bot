@@ -3,9 +3,8 @@
 import { FiHome, FiSettings, FiGrid, FiUpload, FiLogOut } from 'react-icons/fi';
 import { HStack, Image, Heading } from '@chakra-ui/react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { signOut } from 'next-auth/react';
 import styles from '@/static/styles/layout/sidebar.module.css';
+import { useLogout } from '../hooks/useLogout';
 
 interface NavItemProps {
   icon: any;
@@ -23,11 +22,10 @@ const NavItem = ({ icon: Icon, children, href }: NavItemProps) => {
 };
 
 const Sidebar = () => {
-  const router = useRouter();
+  const { logout } = useLogout();
 
   const handleLogout = async () => {
-    await signOut({ redirect: false });
-    router.push('/login');
+    logout();
   };
 
   return (
@@ -46,9 +44,9 @@ const Sidebar = () => {
         <NavItem icon={FiUpload} href="/documents">
           Documents
         </NavItem>
-        <NavItem icon={FiSettings} href="/profile">
+        {/* <NavItem icon={FiSettings} href="/profile">
           Profile Settings
-        </NavItem>
+        </NavItem> */}
         <button className={styles.logoutButton} onClick={handleLogout}>
           <FiLogOut className={styles.navItemIcon} />
           <span className={styles.navItemText}>Logout</span>
