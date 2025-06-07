@@ -75,10 +75,10 @@ const ErrorFallback: React.FC<ErrorFallbackProps> = ({ error }) => {
           {error?.message || 'We\'re sorry, but there was an error processing your request.'}
         </p>
         <button
-          onClick={logout}
+          onClick={() => window.location.reload()}
           className="error-boundary__button"
         >
-          Return to Login
+          Reload Page
         </button>
       </div>
     </div>

@@ -48,7 +48,7 @@ export const documentsApi = {
 
   // Delete a document
   delete: async (id: string) => {
-    const response = await axiosInstance.delete(`/files/${id}`);
+    const response = await axiosInstance.delete(`/files/delete/${id}`);
     return response.data;
   },
 

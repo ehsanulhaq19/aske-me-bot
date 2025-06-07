@@ -5,6 +5,7 @@ import { FiTrash2, FiUpload, FiGrid, FiList } from 'react-icons/fi';
 import DashboardLayout from '@/layouts/DashboardLayout';
 import { documentsApi } from '@/api/documents';
 import useStore from '@/store';
+import ConfirmationModal from '@/components/modal/ConfirmationModal';
 
 interface Document {
   id: string;
@@ -17,15 +18,17 @@ interface Document {
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ALLOWED_FILE_TYPES = ['.txt', '.pdf', '.xlsx', '.docx'];
+const FILE_PREVIEW_URL = '/static/images/document.svg';
 
 export default function Documents() {
   const [documents, setDocuments] = useState<Document[]>([]);
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
   const [totalItems, setTotalItems] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { setFiles } = useStore();
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [documentToDelete, setDocumentToDelete] = useState<string | null>(null);
 
   useEffect(() => {
     fetchDocuments();
@@ -34,10 +37,9 @@ export default function Documents() {
   const fetchDocuments = async () => {
     try {
       const response = await documentsApi.getAll(currentPage, itemsPerPage);
-      console.log("------response----", response);
-      setDocuments(response.items);
-      setTotalItems(response.total);
-      setFiles(response.items);
+      setDocuments(response);
+      // setTotalItems(response.total);
+      setFiles(response);
     } catch (error) {
       console.error('Error fetching documents:', error);
     }
@@ -63,23 +65,19 @@ export default function Documents() {
     const validFiles = Array.from(files).filter(validateFile);
     if (validFiles.length === 0) return;
 
-    // Add files to documents list with pending status
     const newDocuments = validFiles.map(file => ({
       id: Math.random().toString(36).substr(2, 9),
       name: file.name,
       size: `${(file.size / (1024 * 1024)).toFixed(2)} MB`,
       uploadedAt: new Date().toLocaleDateString(),
       status: 'pending' as const,
-      preview: '/document-preview.jpg'
+      preview: FILE_PREVIEW_URL
     }));
 
     setDocuments(prev => [...prev, ...newDocuments]);
 
     try {
-      // Upload files
       const response = await documentsApi.upload(validFiles);
-      
-      // Update status to completed
       setDocuments(prev => 
         prev.map(doc => 
           newDocuments.find(newDoc => newDoc.name === doc.name)
@@ -88,11 +86,9 @@ export default function Documents() {
         )
       );
 
-      // Refresh document list
       fetchDocuments();
     } catch (error) {
       console.error('Error uploading files:', error);
-      // Update status to error
       setDocuments(prev => 
         prev.map(doc => 
           newDocuments.find(newDoc => newDoc.name === doc.name)
@@ -102,7 +98,6 @@ export default function Documents() {
       );
     }
 
-    // Reset file input
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -118,6 +113,23 @@ export default function Documents() {
     }
   };
 
+  const openDeleteModal = (id: string) => {
+    setDocumentToDelete(id);
+    setDeleteModalOpen(true);
+  };
+
+  const closeDeleteModal = () => {
+    setDocumentToDelete(null);
+    setDeleteModalOpen(false);
+  };
+
+  const confirmDelete = async () => {
+    if (documentToDelete) {
+      await handleDelete(documentToDelete);
+      closeDeleteModal();
+    }
+  };
+
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
   return (
@@ -126,12 +138,6 @@ export default function Documents() {
         <div className="documents__header">
           <h1 className="documents__header-title">Documents</h1>
           <div className="documents__header-actions">
-            <button className="button-secondary" onClick={() => setViewMode('grid')}>
-              <FiGrid />
-            </button>
-            <button className="button-secondary" onClick={() => setViewMode('list')}>
-              <FiList />
-            </button>
             <label className="button-primary upload-button" htmlFor="file-upload">
               <FiUpload className="upload-icon" />
               <span>Upload Documents</span>
@@ -148,18 +154,17 @@ export default function Documents() {
           </div>
         </div>
 
-        {viewMode === 'grid' ? (
-          <div className="documents__grid">
+        <div className="documents__grid">
             {documents?.map((doc) => (
               <div key={doc.id} className="documents__card">
                 <div className="documents__card-preview">
-                  <img src={doc.preview} alt={doc.name} />
+                  <img src={FILE_PREVIEW_URL} alt={doc.name} />
                   <div className={`documents__card-status ${doc.status}`}>
                     {doc.status}
                   </div>
                 </div>
                 <div className="documents__card-info">
-                  <div className="documents__card-info-title">{doc.name}</div>
+                  <div className="documents__card-info-title">{doc.filename}</div>
                   <div className="documents__card-info-meta">
                     <span>{doc.size}</span>
                     <span>{doc.uploadedAt}</span>
@@ -167,49 +172,13 @@ export default function Documents() {
                 </div>
                 <div className="documents__card-actions">
                   <button className="button-secondary">View</button>
-                  <button className="button-secondary" onClick={() => handleDelete(doc.id)}>
+                  <button className="button-secondary" onClick={() => openDeleteModal(doc.id)}>
                     <FiTrash2 />
                   </button>
                 </div>
               </div>
             ))}
-          </div>
-        ) : (
-          <div className="documents__list">
-            <div className="documents__list-header">
-              <span>Name</span>
-              <span>Size</span>
-              <span>Uploaded</span>
-              <span>Status</span>
-              <span>Actions</span>
-            </div>
-            {documents?.map((doc) => (
-              <div key={doc.id} className="documents__list-item">
-                <div className="documents__list-item-info">
-                  <div className="documents__list-item-icon">
-                    <FiUpload />
-                  </div>
-                  <div className="documents__list-item-details">
-                    <h3>{doc.name}</h3>
-                    <p>{doc.size}</p>
-                  </div>
-                </div>
-                <div className="documents__list-item-meta">
-                  <span>{doc.uploadedAt}</span>
-                </div>
-                <div className="documents__list-item-status">
-                  <span className={`status-badge ${doc.status}`}>{doc.status}</span>
-                </div>
-                <div className="documents__list-item-actions">
-                  <button className="button-secondary">View</button>
-                  <button className="button-secondary" onClick={() => handleDelete(doc.id)}>
-                    <FiTrash2 />
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
+        </div>
 
         {!documents?.length && (
           <div className="documents__empty">
@@ -247,6 +216,13 @@ export default function Documents() {
           </div>
         )}
       </div>
+      <ConfirmationModal
+        isOpen={deleteModalOpen}
+        onClose={closeDeleteModal}
+        onConfirm={confirmDelete}
+        title="Delete Document"
+        message="Are you sure you want to delete this document? This action cannot be undone."
+      />
     </DashboardLayout>
   );
 } 

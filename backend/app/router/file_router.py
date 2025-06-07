@@ -22,8 +22,8 @@ async def upload(file: UploadFile = File(...), current_user: User = Depends(get_
     )
     return {"message": f"{file.filename} uploaded and embedded successfully."}
 
-@router.delete("/delete")
-def delete(file_id: int = Query(...), current_user: User = Depends(get_current_user)):
+@router.delete("/delete/{file_id}")
+def delete(file_id: int, current_user: User = Depends(get_current_user)):
     file = metadata_repository.get_file_by_id(file_id)
     document_ids = file.document_ids.split(",") if file.document_ids else []
     if document_ids:
