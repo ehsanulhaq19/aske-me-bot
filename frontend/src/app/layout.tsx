@@ -1,6 +1,7 @@
 'use client';
 
 import { ChakraProvider } from '@/providers/ChakraProvider';
+import ErrorBoundary from '@/components/ErrorBoundary';
 import '@/static/styles/main.scss';
 
 export default function RootLayout({
@@ -12,7 +13,9 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <ChakraProvider>
-          {children}
+          <ErrorBoundary>
+            {children}
+          </ErrorBoundary>
         </ChakraProvider>
       </body>
     </html>

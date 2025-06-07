@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axiosInstance from './axios';
 import config from '@/config';
 
 export interface Document {
@@ -8,12 +8,26 @@ export interface Document {
   mimeType: string;
   url: string;
   uploadedAt: string;
+  status: 'pending' | 'completed' | 'error';
+}
+
+export interface PaginatedResponse<T> {
+  items: T[];
+  total: number;
+  page: number;
+  itemsPerPage: number;
 }
 
 export const documentsApi = {
-  // Get all documents
-  getAll: async () => {
-    const response = await axios.get<Document[]>(`${config.apiUrl}/documents`);
+  // Get all documents with pagination
+  getAll: async (page: number = 1, itemsPerPage: number = 10) => {
+    console.log("-----files=====")
+    const response = await axiosInstance.get<PaginatedResponse<Document>>('/files', {
+      params: {
+        page,
+        items_per_page: itemsPerPage
+      }
+    });
     return response.data;
   },
 
@@ -21,10 +35,10 @@ export const documentsApi = {
   upload: async (files: File[]) => {
     const formData = new FormData();
     files.forEach(file => {
-      formData.append('files', file);
+      formData.append('file', file);
     });
 
-    const response = await axios.post<Document[]>(`${config.apiUrl}/documents/upload`, formData, {
+    const response = await axiosInstance.post<Document[]>('/files/upload', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
@@ -34,21 +48,8 @@ export const documentsApi = {
 
   // Delete a document
   delete: async (id: string) => {
-    const response = await axios.delete(`${config.apiUrl}/documents/${id}`);
+    const response = await axiosInstance.delete(`/files/${id}`);
     return response.data;
   },
 
-  // Download a document
-  download: async (id: string) => {
-    const response = await axios.get(`${config.apiUrl}/documents/${id}/download`, {
-      responseType: 'blob',
-    });
-    return response.data;
-  },
-
-  // Get document metadata
-  getMetadata: async (id: string) => {
-    const response = await axios.get<Document>(`${config.apiUrl}/documents/${id}/metadata`);
-    return response.data;
-  },
 }; 

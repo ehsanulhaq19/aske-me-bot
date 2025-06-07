@@ -18,11 +18,11 @@ interface LoginResponse {
 
 export const authApi = {
   async login(credentials: LoginCredentials): Promise<LoginResponse> {
-    const response = await axios.post(`${config.apiUrl}/v1/users/login`, credentials);
+    const response = await axios.post(`${config.apiUrl}/users/login`, credentials);
     return response.data;
   },
 
   async logout(): Promise<void> {
-    await axios.post(`${config.apiUrl}/v1/users/logout`);
+    await axios.post(`${config.apiUrl}/users/logout`);
   },
 }; 

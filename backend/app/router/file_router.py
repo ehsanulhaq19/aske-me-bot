@@ -31,7 +31,7 @@ def delete(file_id: int = Query(...), current_user: User = Depends(get_current_u
     metadata_repository.remove_file_metadata(file_id)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
-@router.get("/files", response_model=List[FileMetaSchema])
+@router.get("/", response_model=List[FileMetaSchema])
 def list_files(current_user: User = Depends(get_current_user)):
     return metadata_repository.list_files()
 

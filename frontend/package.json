@@ -25,12 +25,14 @@
     "next-auth": "^4.24.5",
     "sass": "^1.70.0",
     "zustand": "^4.5.0",
-    "cookie": "^0.5.0"
+    "cookie": "^0.5.0",
+    "js-cookie": "^3.0.5"
   },
   "devDependencies": {
     "@types/node": "^20.11.16",
     "@types/react": "^18.2.52",
     "@types/react-dom": "^18.2.18",
+    "@types/js-cookie": "^3.0.3",
     "typescript": "^5.3.3",
     "eslint": "^8.56.0",
     "eslint-config-next": "14.1.0"
