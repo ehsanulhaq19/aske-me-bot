@@ -1,8 +1,10 @@
 from sqlalchemy import Column, Integer, String
+from sqlalchemy.orm import relationship
 from app.db.database import Base
 
-ROLE_ADMIN = 1
-ROLE_USER = 2
+TYPE_ADMIN = 1
+TYPE_USER = 2
+TYPE_BOT = 3
 
 class User(Base):
     __tablename__ = "users"
@@ -11,4 +13,7 @@ class User(Base):
     name = Column(String(255), index=True)
     email = Column(String(512), unique=True, index=True)
     hashed_password = Column(String(2024))
-    type = Column(Integer, default=ROLE_USER)
+    type = Column(Integer, default=TYPE_USER)
+
+    # Relationship
+    files = relationship("File", secondary="user_files", back_populates="users")

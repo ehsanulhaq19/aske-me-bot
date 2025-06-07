@@ -23,7 +23,7 @@ def login(user: UserLogin):
     token = create_access_token(data={"sub": user.email})
     return {"user": UserOut.from_orm(db_user), "access_token": token, "token_type": "bearer"}
 
-@router.delete("/users/{user_id}")
+@router.delete("/{user_id}")
 def delete_user_endpoint(user_id: int, current_user: User = Depends(get_current_user)):
     if not is_admin_user(current_user):
         raise HTTPException(status_code=403, detail="Not authorized")

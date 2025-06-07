@@ -1,4 +1,4 @@
-from app.models.user import User, ROLE_ADMIN
+from app.models.user import User, TYPE_ADMIN, TYPE_USER, TYPE_BOT
 from app.schemas.user import UserCreate, UserOut, UserOutExtended
 from app.core.security import hash_password
 from app.db.session import get_db
@@ -39,7 +39,7 @@ def create_admin_user(user: UserCreate):
                 name=user.name,
                 email=user.email,
                 hashed_password=hash_password(user.password),
-                type=ROLE_ADMIN
+                type=TYPE_ADMIN
             )
             db.add(admin)
             db.commit()
@@ -47,4 +47,13 @@ def create_admin_user(user: UserCreate):
         return UserOut.from_orm(admin)
     
 def is_admin_user(user: UserOut):
-    return user.type == ROLE_ADMIN if user else False
+    return user.type == TYPE_ADMIN if user else False
+
+def is_normal_user(user: UserOut):
+    return user.type == TYPE_USER if user else False
+
+def is_bot_user(user: UserOut):
+    return user.type == TYPE_BOT if user else False
+
+def is_admin_or_normal_user(user: UserOut):
+    return is_admin_user(user) or is_normal_user(user)

@@ -15,6 +15,7 @@ from alembic import context
 
 from app.models.user import User
 from app.models.file import File
+from app.models.user_file import UserFile
 from app.db.database import Base, SQLALCHEMY_DATABASE_URL
 
 
