@@ -16,11 +16,6 @@ def create_message(message: MessageCreate) -> MessageResponse:
         if not sender:
             raise HTTPException(status_code=404, detail="Sender not found")
         
-        # Check if receiver exists
-        receiver = db.query(User).filter(User.id == message.receiver_id).first()
-        if not receiver:
-            raise HTTPException(status_code=404, detail="Receiver not found")
-        
         # Check if conversation exists
         conversation = db.query(Conversation).filter(Conversation.id == message.conversation_id).first()
         if not conversation:
@@ -28,7 +23,6 @@ def create_message(message: MessageCreate) -> MessageResponse:
         
         db_message = Message(
             sender_id=message.sender_id,
-            receiver_id=message.receiver_id,
             content=message.content,
             conversation_id=message.conversation_id
         )
@@ -61,14 +55,13 @@ def get_conversation_messages(conversation_id: int, skip: int = 0, limit: int = 
 def get_user_messages(user_id: int, skip: int = 0, limit: int = 10) -> Tuple[List[MessageResponse], int]:
     with get_db() as db:
         total = db.query(Message).filter(
-            or_(Message.sender_id == user_id, Message.receiver_id == user_id)
+            or_(Message.sender_id == user_id, Message.sender_id == user_id)
         ).count()
         messages = db.query(Message).options(
             joinedload(Message.sender),
-            joinedload(Message.receiver),
             joinedload(Message.conversation)
         ).filter(
-            or_(Message.sender_id == user_id, Message.receiver_id == user_id)
+            or_(Message.sender_id == user_id, Message.sender_id == user_id)
         ).offset(skip).limit(limit).all()
         return [MessageResponse.from_orm(m) for m in messages], total
 

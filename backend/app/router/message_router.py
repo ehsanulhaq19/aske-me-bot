@@ -3,7 +3,7 @@ from app.schemas.message import MessageCreate, MessageResponse, MessageList
 from app.repository import message_repository
 from app.core.security import get_current_user
 from app.models.user import User
-from app.repository.user_repository import is_admin_or_normal_user
+from app.repository.user_repository import is_admin_or_normal_user, is_bot_user
 
 router = APIRouter()
 
@@ -12,7 +12,7 @@ def create_message(
     message: MessageCreate,
     current_user: User = Depends(get_current_user)
 ):
-    if not is_admin_or_normal_user(current_user):
+    if not is_bot_user(current_user):
         raise HTTPException(status_code=403, detail="Forbidden")
     try:
         return message_repository.create_message(message)

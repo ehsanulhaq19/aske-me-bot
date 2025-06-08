@@ -9,6 +9,15 @@ export interface Widget {
   files: Document[];
   conversations_count?: number;
 }
+
+export interface WidgetBot {
+  id: string;
+  name: string;
+  description: string;
+  type: string;
+  token: string;
+  user_id: number;
+}
 export interface CreateWidgetData {
   name: string;
   description: string;
@@ -18,7 +27,6 @@ export interface CreateWidgetData {
 }
 
 export const widgetsApi = {
-  // Get all widgets
   getAll: async (page: number = 1, itemsPerPage: number = 10) => {
     const response = await axiosInstance.get<Widget[]>('/widgets', {
       params: {
@@ -29,19 +37,21 @@ export const widgetsApi = {
     return response.data;
   },
 
-  // Create a new widget
   register: async (data: CreateWidgetData) => {
     const response = await axiosInstance.post<Widget>('/widgets/register', data);
     return response.data;
   },
 
-  // Delete a widget
   delete: async (id: string) => {
     const response = await axiosInstance.delete(`/widgets/${id}`);
     return response.data;
   },
 
-  // Associate a file with a widget
+  getBotById: async (id: string) => {
+    const response = await axiosInstance.get<WidgetBot>(`/widgets/bot/${id}`);
+    return response.data;
+  },
+
   associateFile: async (widgetId: string, fileId: string) => {
     const response = await axiosInstance.post<Widget>(
       `/widgets/${widgetId}/files/${fileId}`
@@ -49,7 +59,6 @@ export const widgetsApi = {
     return response.data;
   },
 
-  // Remove file association from a widget
   removeFileAssociation: async (widgetId: string, fileId: string) => {
     const response = await axiosInstance.delete(
       `/widgets/${widgetId}/files/${fileId}`
@@ -57,9 +66,19 @@ export const widgetsApi = {
     return response.data;
   },
 
-  // Update a widget
   update: async (id: string, data: CreateWidgetData) => {
     const response = await axiosInstance.put<Widget>(`/widgets/${id}`, data);
     return response.data;
   },
+
+  queryBot: async (message: string, token: string = "") => {
+    const response = await axiosInstance.post<Widget>(`/widgets/bot/query`, {
+      content: message
+    }, {
+      headers: {
+        ...(token ? { Authorization: `Bearer ${token}` } : {})
+      }
+    });
+    return response.data;
+  }
 }; 

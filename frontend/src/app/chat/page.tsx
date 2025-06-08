@@ -2,6 +2,11 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { widgetsApi, Widget } from '@/api/widgets';
+import { authApi, UserCreateGuest, UserOut } from '@/api/auth';
+import { Conversation, conversationsApi, CreateConversationData } from '@/api/conversations';
+import { messagesApi, CreateMessageData } from '@/api/messages';
+import { toast } from 'react-toastify';
 
 interface Message {
   id: string;
@@ -10,17 +15,19 @@ interface Message {
   timestamp: Date;
 }
 
-interface UserInfo {
-  name: string;
-  email: string;
-}
+const BOT_WELCOME_MESSAGE = "Hello {name}. How can I help you today?";
 
 const ChatPage: React.FC = () => {
   const searchParams = useSearchParams();
+  const botId = searchParams.get("botId");
   const isEmbedded = searchParams.get('embedded') === 'true';
-  const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
+  const [bot, setBot] = useState<Widget | null>(null);
+  const [token, setToken] = useState<string | null>(null);
+  const [userInfo, setUserInfo] = useState<UserOut | null>(null);
+  const [conversation, setConversation] = useState<Conversation | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [currentMessage, setCurrentMessage] = useState('');
+  const [showChatLoading, setShowChatLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   
   const scrollToBottom = () => {
@@ -28,20 +35,86 @@ const ChatPage: React.FC = () => {
   };
 
   useEffect(() => {
+    const fetchBotData = async () => {
+      if (botId) {
+        try {
+          const botData = await widgetsApi.getBotById(botId);
+          setBot(botData);
+          setToken(botData.token);
+        } catch (error) {
+          console.error('Error fetching bot data:', error);
+        }
+      }
+    };
+
+    fetchBotData();
+  }, [botId]);
+
+  useEffect(() => {
     scrollToBottom();
   }, [messages]);
 
-  const handleUserInfoSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleUserInfoSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    setUserInfo({
-      name: formData.get('name') as string,
-      email: formData.get('email') as string
-    });
+
+    const user: UserCreateGuest = {
+      email: formData.get('email') as string,
+      name: formData.get('name') as string
+    };
+
+    try {
+      const userInfo = await authApi.createGuestUser(user, token);
+      setUserInfo(userInfo);
+
+      const conversationPayload: CreateConversationData = {
+        name: userInfo.name,
+        type: 'bot'
+      };
+      const conversationData = await conversationsApi.create(conversationPayload, token);
+      setConversation(conversationData);
+
+      const botMessage = BOT_WELCOME_MESSAGE.replace("{name}", userInfo.name);
+      setMessages([{
+        id: Date.now().toString(),
+        text: botMessage,
+        sender: 'bot',
+        timestamp: new Date()
+      }]);
+
+      sendMessage(botMessage, bot?.user_id, conversationData.id);
+    } catch (error) {
+      toast.error('Failed to create guest user');
+    }
   };
 
-  const handleSendMessage = (e: React.FormEvent<HTMLFormElement>) => {
+  async function sendMessage(message: string, sender_id: number, conversation_id: number|null = null) {
+    const messagePayload: CreateMessageData = {
+      content: message,
+      conversation_id: conversation_id || conversation?.id,
+      sender_id: sender_id
+    };
+
+    try {
+      const messageData = await messagesApi.create(messagePayload, token);
+    } catch (error) {
+      toast.error('Failed to send message');
+    }
+  }
+
+  async function queryBot(message: string) {
+    try {
+      const messageData = await widgetsApi.queryBot(message, token);
+      return messageData;
+    } catch (error) {
+      toast.error('Failed to query bot');
+    }
+  }
+
+  const handleSendMessage = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (showChatLoading) return;
+
     if (!currentMessage.trim()) return;
 
     const newMessage: Message = {
@@ -54,16 +127,19 @@ const ChatPage: React.FC = () => {
     setMessages((prev: Message[]) => [...prev, newMessage]);
     setCurrentMessage('');
 
-    // Simulate bot response
-    setTimeout(() => {
-      const botMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        text: `Hello ${userInfo?.name}, I received your message!`,
-        sender: 'bot',
-        timestamp: new Date()
-      };
-      setMessages((prev: Message[]) => [...prev, botMessage]);
-    }, 1000);
+    setShowChatLoading(true);
+    await sendMessage(currentMessage, userInfo?.id);
+
+    const response = await queryBot(currentMessage);
+    setShowChatLoading(false);
+    const botMessage: Message = {
+      id: (Date.now() + 1).toString(),
+      text: response.content,
+      sender: 'bot',
+      timestamp: new Date()
+    };
+    setMessages((prev: Message[]) => [...prev, botMessage]);
+    await sendMessage(response.content, bot?.user_id);
   };
 
   const containerClassName = `chat-container ${isEmbedded ? 'chat-container--embedded' : ''}`;
@@ -72,7 +148,7 @@ const ChatPage: React.FC = () => {
     return (
       <div className={containerClassName}>
         <div className="user-info-form">
-          <h2>Welcome to Chat</h2>
+          <h2>{bot?.name || "Welcome"}</h2>
           <p>Please enter your information to start</p>
           <form onSubmit={handleUserInfoSubmit}>
             <div className="form-group">
@@ -131,6 +207,8 @@ const ChatPage: React.FC = () => {
         <div ref={messagesEndRef} />
       </div>
 
+      {showChatLoading && <div className="chat-loading">Loading...</div>}
+
       <form onSubmit={handleSendMessage} className="message-input-form">
         <input
           type="text"
@@ -139,7 +217,7 @@ const ChatPage: React.FC = () => {
           placeholder="Type your message..."
           className="message-input"
         />
-        <button type="submit" className="send-button">
+        <button type="submit" className="send-button" disabled={showChatLoading}>
           Send
         </button>
       </form>

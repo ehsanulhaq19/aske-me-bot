@@ -1,14 +1,18 @@
-from fastapi import APIRouter, HTTPException, Query, Depends
-from app.schemas.widget import WidgetCreate, WidgetResponse, WidgetList
+from fastapi import APIRouter, HTTPException, Query, Depends, Request
+from app.schemas.widget import WidgetCreate, WidgetResponse, WidgetList, WidgetBotResponse, BotQueryCreate, BotQueryResponse
 from app.repository import widget_repository
-from app.repository.user_repository import is_admin_or_normal_user
-from app.core.security import get_current_user
+from app.repository.user_repository import is_admin_or_normal_user, is_bot_user
+from app.core.security import get_current_user, create_access_token
 from app.models.user import User
 from app.repository.user_file_repository import UserFileRepository
 from app.schemas.user_file import UserFileCreate
+from app.core.config import settings
+from app.services import qa_service
+from app.repository.file_repository import MetadataRepository
 
 router = APIRouter()
 user_file_repository = UserFileRepository()
+file_repository = MetadataRepository()
 
 @router.post("/register", response_model=WidgetResponse)
 def create_widget(widget: WidgetCreate, current_user: User = Depends(get_current_user)):
@@ -82,3 +86,45 @@ def update_widget(
     if not is_admin_or_normal_user(current_user):
         raise HTTPException(status_code=403, detail="Forbidden")
     return widget_repository.update_widget(widget_id, widget)
+
+@router.get("/bot/{bot_id}", response_model=WidgetBotResponse)
+def get_widget(bot_id: int, request: Request):
+    request_from = request.headers.get("referer")
+    frontend_url = f"{settings.FRONTEND_URL}/"
+    if request_from != frontend_url:
+        raise HTTPException(status_code=403, detail="Forbidden")
+    
+    widget = widget_repository.get_bot_widget(bot_id)
+    widget_user = widget.user
+    if not widget_user:
+        raise HTTPException(status_code=403, detail="Forbidden")
+    
+    token = create_access_token(data={"sub": widget_user.email})
+    return WidgetBotResponse(
+        id=widget.id,
+        name=widget.name,
+        description=widget.description,
+        type=widget.type,
+        user_id=widget_user.id,
+        token=token
+    )
+    
+@router.post("/bot/query", response_model=BotQueryResponse)
+def query_bot(query: BotQueryCreate, current_user: User = Depends(get_current_user)):
+    if not is_bot_user(current_user):
+        raise HTTPException(status_code=403, detail="Forbidden")
+    
+    widget = widget_repository.get_bot_widget_by_user_id(current_user.id)
+    if not widget:
+        raise HTTPException(status_code=404, detail="Widget not found")
+    
+    user_files, _ = user_file_repository.get_user_files(current_user.id)
+    file_ids = [user_file.file_id for user_file in user_files]
+    files = file_repository.get_files_by_ids(file_ids)
+    
+    reference_document_ids = [file.reference_document_ids for file in files] if files else []
+    content = qa_service.answer_query(query.content, reference_document_ids, widget.type, widget.prompt)
+    if content and content.get("answer"):
+        return BotQueryResponse(content=content.get("answer"))
+    else:
+        return BotQueryResponse(content="I'm sorry, I can't answer that question.")

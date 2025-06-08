@@ -6,7 +6,6 @@ from .conversation import ConversationResponse
 class MessageBase(BaseModel):
     content: str
     sender_id: int
-    receiver_id: int
     conversation_id: int
 
 class MessageCreate(MessageBase):
@@ -15,7 +14,6 @@ class MessageCreate(MessageBase):
 class MessageResponse(MessageBase):
     id: int
     sender: Optional[UserOut]
-    receiver: Optional[UserOut]
     conversation: Optional[ConversationResponse]
 
     class Config:

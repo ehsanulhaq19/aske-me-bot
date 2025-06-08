@@ -5,25 +5,35 @@ from typing import List, Dict
 from app.repository.file_repository import MetadataRepository
 from app.models.user import User
 from app.core.security import get_current_user
+from app.repository.user_repository import is_admin_user
+from fastapi import HTTPException
 
 router = APIRouter()
 metadata_repository = MetadataRepository()
 
 @router.post("/upload")
 async def upload(file: UploadFile = File(...), current_user: User = Depends(get_current_user)):
+    if not is_admin_user(current_user):
+        raise HTTPException(status_code=403, detail="Forbidden")
+    
     result = await file_service.upload_file(file)
     document_ids = result.get("document_ids")
+    doc_id = result.get("doc_id")
     file_path = result.get("file_path")
     document_ids_str = ",".join(map(str, document_ids)) if document_ids else None
     metadata_repository.save_file_metadata(
         file.filename,
         file_path,
-        document_ids=document_ids_str
+        document_ids=document_ids_str,
+        reference_document_ids=doc_id
     )
     return {"message": f"{file.filename} uploaded and embedded successfully."}
 
 @router.delete("/delete/{file_id}")
 def delete(file_id: int, current_user: User = Depends(get_current_user)):
+    if not is_admin_user(current_user):
+        raise HTTPException(status_code=403, detail="Forbidden")
+    
     file = metadata_repository.get_file_by_id(file_id)
     document_ids = file.document_ids.split(",") if file.document_ids else []
     if document_ids:
@@ -37,6 +47,9 @@ def list_files(
     page_size: int = Query(10, ge=1, le=100, description="Number of items per page"),
     current_user: User = Depends(get_current_user)
 ):
+    if not is_admin_user(current_user):
+        raise HTTPException(status_code=403, detail="Forbidden")
+    
     skip = (page - 1) * page_size
     files, total = metadata_repository.list_files(skip=skip, limit=page_size)
     return {

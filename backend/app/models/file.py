@@ -8,6 +8,7 @@ class File(Base):
     filename = Column(String(512), index=True)
     path = Column(String(1024))
     document_ids = Column(String(1024), nullable=True)
+    reference_document_ids = Column(String(1024), nullable=True)
 
     # Relationship
     users = relationship("User", secondary="user_files", back_populates="files")

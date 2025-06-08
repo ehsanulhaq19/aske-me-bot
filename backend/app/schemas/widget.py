@@ -2,7 +2,7 @@ from pydantic import BaseModel, EmailStr
 from typing import List, Optional
 import base64
 from app.schemas.file import FileOut
-
+from app.schemas.user import UserResponse
 class WidgetCreate(BaseModel):
     name: str
     description: str
@@ -46,3 +46,27 @@ class WidgetList(BaseModel):
     total: int
     page: int
     size: int 
+    
+class WidgetBotResponse(BaseModel):
+    id: int
+    name: str
+    description: Optional[str] = None
+    type: str
+    user_id: int
+    token: str
+    
+class WidgetUserResponse(BaseModel):
+    id: int
+    name: str
+    description: Optional[str] = None
+    type: str
+    user: UserResponse
+    
+    class Config:
+        from_attributes = True
+
+class BotQueryCreate(BaseModel):
+    content: str
+    
+class BotQueryResponse(BaseModel):
+    content: str

@@ -1,17 +1,20 @@
 from app.models.user import User, TYPE_BOT
 from app.models.widget import Widget
 from app.models.file import File
-from app.schemas.widget import WidgetCreate, WidgetResponse
+from app.schemas.widget import WidgetCreate, WidgetResponse, WidgetUserResponse
 from app.core.security import hash_password
 from app.db.session import get_db
 from typing import List, Tuple
 from sqlalchemy.orm import joinedload
+from datetime import datetime
 
 def create_widget(widget: WidgetCreate) -> WidgetResponse:
     with get_db() as db:
-        widget_email = f"{widget.name}@widget.com"
-        widget_name = f"{widget.name} Widget"
-        widget_password = f"{widget.name}123"
+        timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+        widget_name = widget.name.lower().replace(" ", "_")
+        widget_email = f"{widget_name}_{timestamp}@widget.com"
+        widget_name = f"{widget_name} Widget"
+        widget_password = f"{widget_name}123"
 
         db_widget_user = User(
             email=widget_email,
@@ -77,6 +80,25 @@ def get_widget(widget_id: int) -> WidgetResponse:
         if not widget:
             return None
         
+        return WidgetResponse.from_orm(widget)
+    
+def get_bot_widget(bot_id: int) -> WidgetUserResponse:
+    with get_db() as db:
+        widget = db.query(Widget).options(
+            joinedload(Widget.user).joinedload(User.files)
+        ).filter(Widget.id == bot_id).first()
+        if not widget:
+            return None
+        
+        return WidgetUserResponse.from_orm(widget)
+    
+def get_bot_widget_by_user_id(user_id: int) -> WidgetResponse:
+    with get_db() as db:
+        widget = db.query(Widget).options(
+            joinedload(Widget.user).joinedload(User.files)
+        ).filter(Widget.user_id == user_id).first()
+        if not widget:
+            return None
         return WidgetResponse.from_orm(widget)
     
 def update_widget(widget_id: int, widget: WidgetCreate) -> WidgetResponse:

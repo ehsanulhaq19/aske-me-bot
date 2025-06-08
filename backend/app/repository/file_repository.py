@@ -5,9 +5,9 @@ from app.schemas.file import FileMetaSchema
 from typing import List, Tuple
 
 class MetadataRepository:
-    def save_file_metadata(self, name: str, path: str, document_ids: str = None):
+    def save_file_metadata(self, name: str, path: str, document_ids: str = None, reference_document_ids: str = None):
         with get_db() as db:
-            meta = File(filename=name, path=path, document_ids=document_ids)
+            meta = File(filename=name, path=path, document_ids=document_ids, reference_document_ids=reference_document_ids)
             db.add(meta)
 
     def remove_file_metadata(self, id: int):
@@ -41,3 +41,9 @@ class MetadataRepository:
             if not file:
                 raise HTTPException(status_code=404, detail="File not found")
             return FileMetaSchema.from_orm(file)
+        
+    def get_files_by_ids(self, file_ids: List[int]):
+        with get_db() as db:
+            files = db.query(File).filter(File.id.in_(file_ids)).all()
+            return [FileMetaSchema.from_orm(file) for file in files]
+        

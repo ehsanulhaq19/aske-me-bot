@@ -5,6 +5,7 @@ from app.db.database import Base
 TYPE_ADMIN = 1
 TYPE_USER = 2
 TYPE_BOT = 3
+TYPE_GUEST = 4
 
 class User(Base):
     __tablename__ = "users"

@@ -5,6 +5,7 @@ class FileMetaSchema(BaseModel):
     filename: str
     path: str
     document_ids: str | None = None
+    reference_document_ids: str | None = None
     
     model_config = {
         "from_attributes": True

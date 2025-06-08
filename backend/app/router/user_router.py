@@ -1,8 +1,9 @@
 from fastapi import APIRouter, HTTPException, Depends
-from app.schemas.user import UserCreate, UserOut, UserLogin, Token
-from app.repository.user_repository import create_user, get_user_by_email, delete_user, is_admin_user
+from app.schemas.user import UserCreate, UserOut, UserLogin, Token, UserCreateGuest
+from app.repository.user_repository import create_user, get_user_by_email, delete_user, is_admin_user, is_bot_user
 from app.core.security import verify_password, create_access_token, get_current_user
-from app.models.user import User
+from app.models.user import User, TYPE_GUEST
+from app.core.config import settings
 
 router = APIRouter()
 
@@ -31,3 +32,16 @@ def delete_user_endpoint(user_id: int, current_user: User = Depends(get_current_
     if not deleted:
         raise HTTPException(status_code=404, detail="User not found")
     return {"message": "User deleted"}
+
+@router.post("/guest", response_model=UserOut)
+def create_guest_user(user: UserCreateGuest, current_user: User = Depends(get_current_user)):
+    if not is_bot_user(current_user):
+        raise HTTPException(status_code=403, detail="Not authorized")
+    
+    db_user = get_user_by_email(user.email)
+    if db_user:
+        return db_user
+    
+    user.type = TYPE_GUEST
+    user.password = settings.GUEST_USER_PASSWORD
+    return create_user(user)

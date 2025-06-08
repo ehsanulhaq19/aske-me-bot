@@ -1,14 +1,26 @@
 import axios from 'axios';
 import config from '@/config';
 
-interface LoginCredentials {
+export interface LoginCredentials {
   email: string;
   password: string;
 }
 
-interface LoginResponse {
+export interface UserCreateGuest {
+  email: string;
+  name: string;
+}
+
+export interface UserOut {
+  id: number;
+  email: string;
+  name: string;
+  type: number;
+}
+
+export interface LoginResponse {
   user: {
-    id: string;
+    id: number;
     email: string;
     name: string;
   };
@@ -24,5 +36,14 @@ export const authApi = {
 
   async logout(): Promise<void> {
     await axios.post(`${config.apiUrl}/users/logout`);
+  },
+
+  async createGuestUser(user: UserCreateGuest, token: string): Promise<UserOut> {
+    const response = await axios.post(`${config.apiUrl}/users/guest`, user, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+    return response.data;
   },
 }; 
