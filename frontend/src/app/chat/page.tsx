@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 
 interface Message {
   id: string;
@@ -15,6 +16,8 @@ interface UserInfo {
 }
 
 const ChatPage: React.FC = () => {
+  const searchParams = useSearchParams();
+  const isEmbedded = searchParams.get('embedded') === 'true';
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [currentMessage, setCurrentMessage] = useState('');
@@ -63,9 +66,11 @@ const ChatPage: React.FC = () => {
     }, 1000);
   };
 
+  const containerClassName = `chat-container ${isEmbedded ? 'chat-container--embedded' : ''}`;
+
   if (!userInfo) {
     return (
-      <div className="chat-container">
+      <div className={containerClassName}>
         <div className="user-info-form">
           <h2>Welcome to Chat</h2>
           <p>Please enter your information to start</p>
@@ -100,7 +105,7 @@ const ChatPage: React.FC = () => {
   }
 
   return (
-    <div className="chat-container">
+    <div className={containerClassName}>
       <div className="chat-header">
         <h2>Chat with Bot</h2>
         <div className="user-info">

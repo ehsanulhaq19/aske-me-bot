@@ -1,11 +1,12 @@
 'use client';
 
 import React, { ReactNode, useState, useEffect } from 'react';
-import { FiEdit2, FiTrash2, FiPlus, FiMessageSquare } from 'react-icons/fi';
+import { FiEdit2, FiTrash2, FiPlus, FiMessageSquare, FiCopy } from 'react-icons/fi';
 import DashboardLayout from '@/layouts/DashboardLayout';
 import WidgetModal, { WidgetFormData } from '@/components/modal/WidgetModal';
 import ConfirmationModal from '@/components/modal/ConfirmationModal';
 import { widgetsApi, Widget } from '@/api/widgets';
+import { toast } from 'react-toastify';
 
 interface LayoutProps {
   children: ReactNode;
@@ -80,6 +81,12 @@ const Widgets: React.FC = () => {
     window.location.href = `/chat/${id}`;
   };
 
+  const handleCopyPath = (id: string) => {
+    const scriptTag = `<script src="${window.location.origin}/static/js/widget.js?id=${id}" async></script>`;
+    navigator.clipboard.writeText(scriptTag);
+    toast.success('Widget code copied to clipboard');
+  };
+
   const handleModalSubmit = async (data: WidgetFormData) => {
     try {
       const fileIds = data.fileIds.map((id: string) => parseInt(id));
@@ -128,6 +135,12 @@ const Widgets: React.FC = () => {
                   <p className="chatbot__description">{widget.description}</p>
                 </div>
                 <div className="chatbot__actions">
+                  <button
+                    className="chatbot__action-btn"
+                    onClick={() => handleCopyPath(widget.id)}
+                  >
+                    <FiCopy />
+                  </button>
                   <button
                     className="chatbot__action-btn"
                     onClick={() => handleChatClick(widget.id)}
