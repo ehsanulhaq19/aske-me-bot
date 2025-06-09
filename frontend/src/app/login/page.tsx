@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import Slider from '@/components/slider/Slider';
 import useStore from '@/store';
 import { setToken, getToken } from '@/services/security';
@@ -18,7 +19,6 @@ export default function LoginPage() {
   });
 
   useEffect(() => {
-    // Check if user is already logged in
     const token = getToken();
     if (token) {
       router.replace('/dashboard');
@@ -58,6 +58,15 @@ export default function LoginPage() {
       
       <div className="login-form-section">
         <div className="login-form-wrapper">
+          <div className="login-logo">
+            <Image
+              src="/static/images/logo.svg"
+              alt="Logo"
+              width={150}
+              height={50}
+              priority
+            />
+          </div>
           <h1 className="login-form-title">Welcome Back</h1>
           <p className="login-form-subtitle">Sign in to continue to your account</p>
           

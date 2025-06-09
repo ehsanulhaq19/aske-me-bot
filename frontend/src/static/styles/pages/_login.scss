@@ -14,12 +14,25 @@
     overflow: hidden;
   }
 
+  &-logo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: $spacing-xl;
+
+    img {
+      max-width: 100%;
+      height: auto;
+      object-fit: contain;
+    }
+  }
+
   &-form-section {
     display: flex;
-    align-items: center;
     justify-content: center;
     padding: $spacing-xl;
     background-color: $bg-primary;
+    padding-top: 100px;
   }
 
   &-form-wrapper {
