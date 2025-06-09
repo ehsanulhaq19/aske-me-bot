@@ -175,4 +175,3 @@ docker-compose logs -f frontend # Frontend only
 
 ## License
 
-[Your License Here] 
