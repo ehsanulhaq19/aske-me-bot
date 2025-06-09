@@ -1,85 +1,68 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import DashboardLayout from '@/layouts/DashboardLayout';
 import useStore from '@/store';
+import { analyticsApi, SystemAnalytics } from '@/api/analytics';
 
 export default function Dashboard() {
-  const { widgets, files, user } = useStore();
+  const { user } = useStore();
+  const [analytics, setAnalytics] = useState<SystemAnalytics | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchAnalytics = async () => {
+      try {
+        const data = await analyticsApi.getSystemAnalytics();
+        setAnalytics(data);
+      } catch (error) {
+        console.error('Failed to fetch analytics:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAnalytics();
+  }, []);
 
   return (
     <DashboardLayout>
       <div className="dashboard">
         <div className="dashboard__header">
           <h1 className="dashboard__header-title">Dashboard</h1>
-          <div className="dashboard__header-actions">
-            <button className="button-primary">Add Widget</button>
-            <button className="button-secondary">Export Data</button>
-          </div>
         </div>
 
         <div className="dashboard__stats">
           <div className="dashboard__stat-card">
             <div className="dashboard__stat-card-title">Total Widgets</div>
-            <div className="dashboard__stat-card-value">{widgets.length}</div>
-            <div className="dashboard__stat-card-change positive">
-              <i className="icon-arrow-up"></i>
-              <span>12% increase</span>
+            <div className="dashboard__stat-card-value">
+              {loading ? '...' : analytics?.total_widgets || 0}
             </div>
           </div>
 
           <div className="dashboard__stat-card">
-            <div className="dashboard__stat-card-title">Active Widgets</div>
+            <div className="dashboard__stat-card-title">Total Conversations</div>
             <div className="dashboard__stat-card-value">
-              {widgets.filter(w => w.status === 'active').length}
-            </div>
-            <div className="dashboard__stat-card-change positive">
-              <i className="icon-arrow-up"></i>
-              <span>8% increase</span>
+              {loading ? '...' : analytics?.total_conversations || 0}
             </div>
           </div>
 
           <div className="dashboard__stat-card">
             <div className="dashboard__stat-card-title">Total Documents</div>
-            <div className="dashboard__stat-card-value">{files.length}</div>
-            <div className="dashboard__stat-card-change negative">
-              <i className="icon-arrow-down"></i>
-              <span>3% decrease</span>
+            <div className="dashboard__stat-card-value">
+              {loading ? '...' : analytics?.total_files || 0}
             </div>
           </div>
 
           <div className="dashboard__stat-card">
-            <div className="dashboard__stat-card-title">Active Users</div>
-            <div className="dashboard__stat-card-value">245</div>
-            <div className="dashboard__stat-card-change positive">
-              <i className="icon-arrow-up"></i>
-              <span>24% increase</span>
+            <div className="dashboard__stat-card-title">Guest Users</div>
+            <div className="dashboard__stat-card-value">
+              {loading ? '...' : analytics?.total_type_4_users || 0}
             </div>
           </div>
         </div>
 
         <div className="dashboard__main">
-          <div className="dashboard__chart-card">
-            <div className="dashboard__chart-card-header">
-              <h2 className="dashboard__chart-card-header-title">Usage Analytics</h2>
-            </div>
-            {/* Chart component will go here */}
-          </div>
-
-          <div className="dashboard__chart-card">
-            <div className="dashboard__chart-card-header">
-              <h2 className="dashboard__chart-card-header-title">Widget Performance</h2>
-            </div>
-            {/* Chart component will go here */}
-          </div>
-
-          <div className="dashboard__chart-card">
-            <div className="dashboard__chart-card-header">
-              <h2 className="dashboard__chart-card-header-title">Document Analytics</h2>
-            </div>
-            {/* Chart component will go here */}
-          </div>
-
           <div className="dashboard__activity">
             <div className="dashboard__activity-header">
               <h2 className="dashboard__activity-header-title">Recent Activity</h2>
