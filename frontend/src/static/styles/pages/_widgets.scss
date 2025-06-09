@@ -323,6 +323,10 @@
     color: $text-secondary;
     font-size: 0.875rem;
     line-height: 1.4;
+    max-width: 120px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   &__actions {

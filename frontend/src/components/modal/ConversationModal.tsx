@@ -55,8 +55,8 @@ const ConversationModal: React.FC<ConversationModalProps> = ({ isOpen, onClose, 
   );
 
   const debouncedFetchMessages = useCallback(
-    debounce(async (conversationId: number, page: number) => {
-      if (isLoadingMessages || !hasMoreMessages) return;
+    debounce(async (conversationId: number, page: number, hasMoreMessagesParam: boolean|null = null) => {
+      if (isLoadingMessages || (!hasMoreMessagesParam && !hasMoreMessages)) return;
 
       try {
         setIsLoadingMessages(true);
@@ -173,7 +173,7 @@ const ConversationModal: React.FC<ConversationModalProps> = ({ isOpen, onClose, 
       setMessagePage(1);
       setHasMoreMessages(true);
       setConversationCreator(null);
-      debouncedFetchMessages(selectedConversation.id, 1);
+      debouncedFetchMessages(selectedConversation.id, 1, true);
     }
 
     return () => {
