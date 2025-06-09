@@ -2,6 +2,10 @@
 
 A modern web application with a React frontend and a backend API, containerized with Docker.
 
+## Video Demo
+Check out our video demonstration to see the project in action:
+[Watch Demo Video](https://drive.google.com/file/d/1l27u362DEJPYsa1lB76y4DbQxMZB4Z9p/view?usp=sharing)
+
 ## Project Structure
 
 ```
