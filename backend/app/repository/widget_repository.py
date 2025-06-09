@@ -7,6 +7,7 @@ from app.db.session import get_db
 from typing import List, Tuple
 from sqlalchemy.orm import joinedload
 from datetime import datetime
+from app.repository.conversation_repository import get_conversations_by_user_id
 
 def create_widget(widget: WidgetCreate) -> WidgetResponse:
     with get_db() as db:
@@ -143,4 +144,7 @@ def get_widgets_paginated(skip: int, limit: int) -> Tuple[List[WidgetResponse], 
             .limit(limit)\
             .all()
         
-        return [WidgetResponse.from_orm(w) for w in widgets], total 
+        widgets_with_conversations = [WidgetResponse.from_orm(w) for w in widgets]
+        for widget in widgets_with_conversations:
+            widget.total_conversations = get_conversations_by_user_id(widget.user_id)[1]
+        return widgets_with_conversations, total 

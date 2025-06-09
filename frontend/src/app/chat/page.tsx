@@ -183,7 +183,7 @@ const ChatPage: React.FC = () => {
   return (
     <div className={containerClassName}>
       <div className="chat-header">
-        <h2>Chat with Bot</h2>
+        <h2>{bot?.name || "Chat with Bot"}</h2>
         <div className="user-info">
           <span>{userInfo.name}</span>
           <span>{userInfo.email}</span>
@@ -205,9 +205,19 @@ const ChatPage: React.FC = () => {
           </div>
         ))}
         <div ref={messagesEndRef} />
+        {showChatLoading && (
+            <div className="message bot-message chat-loading">
+              <div className="message-content">
+                <p>
+                  Loading
+                  <span className="dot">.</span>
+                  <span className="dot">.</span>
+                  <span className="dot">.</span>
+                </p>
+              </div>
+            </div>
+        )}
       </div>
-
-      {showChatLoading && <div className="chat-loading">Loading...</div>}
 
       <form onSubmit={handleSendMessage} className="message-input-form">
         <input

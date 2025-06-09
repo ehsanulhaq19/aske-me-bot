@@ -33,10 +33,25 @@ def get_prompt(prompt_type: str, custom_prompt: str = ""):
         else:
             prompt_template = GENERAL_PURPOSE_PROMPT
 
+    final_instructions = """
+    IMPORTANT INSTRUCTIONS:
+    1. Base your response ONLY on the information provided in the context above.
+    2. If the context does not contain relevant information to answer the question, respond with: "I apologize, but I don't have enough information in my knowledge base to answer this question accurately."
+    3. Do not make up or infer information that is not explicitly present in the context.
+    4. Keep your response focused on the information found in the provided documents.
+    5. If the question is not related to the context, respond with: "I apologize, but I don't have enough information in my knowledge base to answer this question accurately."
+    6. If the question is not clear, ask for clarification.
+    7. If the question is not related to the context, respond with: "I apologize, but I don't have enough information in my knowledge base to answer this question accurately."
+    8. If the question is not related to the context, respond with: "I apologize, but I don't have enough information in my knowledge base to answer this question accurately."
+    9. If the question is not related to the context, respond with: "I apologize, but I don't have enough information in my knowledge base to answer this question accurately."
+    10. If the question is not related to the context, respond with: "I apologize, but I don't have enough information in my knowledge base to answer this question accurately."
+    """
+
     return PromptTemplate.from_template(
         prompt_template + "\n\n"
         "Context:\n{context}\n\n"
         "Question:\n{question}\n\n"
+        f"{final_instructions}\n\n"
         "Answer:"
     )
 

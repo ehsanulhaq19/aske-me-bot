@@ -2,6 +2,7 @@ from pydantic import BaseModel
 from typing import List, Optional
 from .user import UserOut
 from .conversation import ConversationResponse
+from datetime import datetime
 
 class MessageBase(BaseModel):
     content: str
@@ -15,6 +16,7 @@ class MessageResponse(MessageBase):
     id: int
     sender: Optional[UserOut]
     conversation: Optional[ConversationResponse]
+    created_at: datetime
 
     class Config:
         from_attributes = True

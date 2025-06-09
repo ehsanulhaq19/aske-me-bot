@@ -5,11 +5,16 @@ import { FiEdit2, FiTrash2, FiPlus, FiMessageSquare, FiCopy } from 'react-icons/
 import DashboardLayout from '@/layouts/DashboardLayout';
 import WidgetModal, { WidgetFormData } from '@/components/modal/WidgetModal';
 import ConfirmationModal from '@/components/modal/ConfirmationModal';
+import ConversationModal from '@/components/modal/ConversationModal';
 import { widgetsApi, Widget } from '@/api/widgets';
 import { toast } from 'react-toastify';
 
 interface LayoutProps {
   children: ReactNode;
+}
+
+interface WidgetFile {
+  id: string;
 }
 
 const Widgets: React.FC = () => {
@@ -22,16 +27,18 @@ const Widgets: React.FC = () => {
   const [editingWidget, setEditingWidget] = useState<Widget | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [widgetToDelete, setWidgetToDelete] = useState<string | null>(null);
+  const [isConversationModalOpen, setIsConversationModalOpen] = useState(false);
+  const [selectedWidgetId, setSelectedWidgetId] = useState<string | null>(null);
 
   const fetchWidgets = async () => {
     try {
       setIsLoading(true);
       const data = await widgetsApi.getAll(currentPage, itemsPerPage);
-      const widgetsList = widgets
+      const widgetsList: { [key: string]: Widget } = {};
         
-      data.items.forEach(item => {
+      data.items.forEach((item: Widget) => {
         widgetsList[item.id] = item;
-      })
+      });
 
       setWidgets(widgetsList);
       setTotalItems(data.total);
@@ -78,7 +85,8 @@ const Widgets: React.FC = () => {
   };
 
   const handleChatClick = (id: string) => {
-    window.location.href = `/chat/${id}`;
+    setSelectedWidgetId(id);
+    setIsConversationModalOpen(true);
   };
 
   const handleCopyPath = (id: string) => {
@@ -126,7 +134,7 @@ const Widgets: React.FC = () => {
         <div className="widgets__loading">Loading...</div>
       ) : (
         <div className="widgets__grid">
-          {Object.values(widgets)?.map((widget: Widget) => (
+          {Object.values(widgets).map((widget: Widget) => (
             <div key={widget.id} className="chatbot">
               <div className="chatbot__header">
                 <img src="/static/images/logo.svg" alt={widget.name} className="chatbot__avatar" />
@@ -168,7 +176,7 @@ const Widgets: React.FC = () => {
                   </div>
                   <div className="chatbot__stat">
                     <FiMessageSquare />
-                    <span>{widget.conversations_count || 0}</span>
+                    <span>{widget.total_conversations || 0}</span>
                   </div>
                 </div>
               </div>
@@ -177,22 +185,20 @@ const Widgets: React.FC = () => {
         </div>
       )}
 
-      {
-        isModalOpen && (
-          <WidgetModal
-            isOpen={isModalOpen}
-            onClose={() => setIsModalOpen(false)}
-            onSubmit={handleModalSubmit}
-            initialData={editingWidget ? {
-              name: editingWidget.name,
-              type: editingWidget.type,
-              fileIds: editingWidget.files.map((file: File) => file.id),
-              prompt: editingWidget.prompt,
-              description: editingWidget.description
-            } : undefined}
-          />
-        )
-      }
+      {isModalOpen && (
+        <WidgetModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onSubmit={handleModalSubmit}
+          initialData={editingWidget ? {
+            name: editingWidget.name,
+            type: editingWidget.type,
+            fileIds: editingWidget.files.map((file: WidgetFile) => file.id),
+            prompt: editingWidget.prompt,
+            description: editingWidget.description
+          } : undefined}
+        />
+      )}
 
       <ConfirmationModal
         isOpen={isDeleteModalOpen}
@@ -209,7 +215,21 @@ const Widgets: React.FC = () => {
     </div>
   );
 
-  return <DashboardLayout>{content}</DashboardLayout>;
+  return (
+    <DashboardLayout>
+      {content}
+      {selectedWidgetId && (
+        <ConversationModal
+          isOpen={isConversationModalOpen}
+          onClose={() => {
+            setIsConversationModalOpen(false);
+            setSelectedWidgetId(null);
+          }}
+          widgetId={selectedWidgetId}
+        />
+      )}
+    </DashboardLayout>
+  );
 };
 
 export default Widgets; 

@@ -43,7 +43,7 @@ def list_conversation_messages(
     if not is_admin_or_normal_user(current_user):
         raise HTTPException(status_code=403, detail="Forbidden")
     skip = (page - 1) * size
-    messages, total = message_repository.get_conversation_messages(conversation_id, skip, size)
+    messages, total = message_repository.get_conversation_messages(conversation_id, skip, size, "created_at", "asc")
     return {
         "items": messages,
         "total": total,

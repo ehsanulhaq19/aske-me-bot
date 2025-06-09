@@ -15,6 +15,14 @@ export interface Message {
   conversation_id: number;
   sender: User;
   conversation: Conversation;
+  created_at: string;
+}
+
+export interface MessageUser {
+  id: number;
+  name: string;
+  email: string;
+  type: number;
 }
 
 export interface CreateMessageData {

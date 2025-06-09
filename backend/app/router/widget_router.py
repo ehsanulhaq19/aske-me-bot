@@ -123,6 +123,8 @@ def query_bot(query: BotQueryCreate, current_user: User = Depends(get_current_us
     files = file_repository.get_files_by_ids(file_ids)
     
     reference_document_ids = [file.reference_document_ids for file in files] if files else []
+    if not reference_document_ids:
+        return BotQueryResponse(content="I apologize, but I don't have enough information in my knowledge base to answer this question accurately.")
     content = qa_service.answer_query(query.content, reference_document_ids, widget.type, widget.prompt)
     if content and content.get("answer"):
         return BotQueryResponse(content=content.get("answer"))

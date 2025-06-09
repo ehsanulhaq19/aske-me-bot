@@ -17,7 +17,9 @@ class WidgetResponse(BaseModel):
     prompt: Optional[str] = None
     type: str
     files: List[FileOut] = [],
+    user_id: int = None,
     widget_encoded_id: str = None
+    total_conversations: int = 0
     
     class Config:
         from_attributes = True
@@ -33,7 +35,9 @@ class WidgetResponse(BaseModel):
             prompt=obj.prompt,
             type=obj.type,
             files=[],
-            widget_encoded_id=encoded_id
+            widget_encoded_id=encoded_id,
+            user_id=obj.user_id,
+            total_conversations=obj.total_conversations if hasattr(obj, 'total_conversations') else 0
         )
         
         if hasattr(obj, 'user') and obj.user and hasattr(obj.user, 'files'):

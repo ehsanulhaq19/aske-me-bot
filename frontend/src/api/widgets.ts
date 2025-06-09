@@ -7,7 +7,7 @@ export interface Widget {
   description: string;
   type: string;
   files: Document[];
-  conversations_count?: number;
+  total_conversations?: number;
 }
 
 export interface WidgetBot {

@@ -4,6 +4,7 @@ from app.repository import conversation_repository
 from app.core.security import get_current_user
 from app.models.user import User
 from app.repository.user_repository import is_admin_or_normal_user, is_bot_user
+from app.repository import widget_repository
 
 router = APIRouter()
 
@@ -70,4 +71,30 @@ def delete_conversation(
         raise HTTPException(status_code=403, detail="Forbidden")
     if not conversation_repository.delete_conversation(conversation_id):
         raise HTTPException(status_code=404, detail="Conversation not found")
-    return {"message": "Conversation deleted successfully"} 
+    return {"message": "Conversation deleted successfully"}
+
+@router.get("/widget/{widget_id}", response_model=ConversationList)
+def get_conversations_by_widget(
+    widget_id: int,
+    page: int = Query(1, gt=0),
+    size: int = Query(10, gt=0, le=100),
+    current_user: User = Depends(get_current_user)
+):
+    if not is_admin_or_normal_user(current_user):
+        raise HTTPException(status_code=403, detail="Forbidden")
+    
+    widget = widget_repository.get_widget(widget_id)
+    if not widget:
+        raise HTTPException(status_code=404, detail="Widget not found")
+    
+    if not widget.user_id:
+        raise HTTPException(status_code=404, detail="Widget user not found")
+
+    skip = (page - 1) * size
+    conversations, total = conversation_repository.get_conversations_by_user_id(widget.user_id, skip, size, "created_at", "desc")
+    return {
+        "items": conversations,
+        "total": total,
+        "page": page,
+        "size": size
+    } 

@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from typing import List, Optional
+from datetime import datetime
 
 class ConversationBase(BaseModel):
     name: str
@@ -10,7 +11,7 @@ class ConversationCreate(ConversationBase):
 
 class ConversationResponse(ConversationBase):
     id: int
-
+    created_at: datetime
     class Config:
         from_attributes = True
 

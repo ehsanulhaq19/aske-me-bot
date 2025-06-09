@@ -39,15 +39,15 @@
   }
 
   &__grid {
-    @include grid-layout(4, $spacing-lg);
+    @include grid-layout(6, $spacing-lg);
     margin-bottom: $spacing-xl;
 
     @include tablet {
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(4, 1fr);
     }
 
     @include mobile {
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(3, 1fr);
     }
   }
 
@@ -56,9 +56,10 @@
     cursor: pointer;
     padding: $spacing-md;
     position: relative;
+    width: max-content;
 
     &-preview {
-      width: 100%;
+      width: 200px;
       max-height: 200px;
       background-color: $bg-tertiary;
       border-radius: $border-radius-md;

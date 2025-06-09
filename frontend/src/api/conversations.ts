@@ -4,6 +4,7 @@ export interface Conversation {
   id: number;
   name: string;
   type: string;
+  created_at: string;
 }
 
 export interface CreateConversationData {
@@ -51,6 +52,16 @@ export const conversationsApi = {
 
   delete: async (conversationId: string) => {
     const response = await axiosInstance.delete(`/conversations/${conversationId}`);
+    return response.data;
+  },
+
+  getByWidgetId: async (widgetId: string, page: number = 1, itemsPerPage: number = 10) => {
+    const response = await axiosInstance.get<Conversation[]>(`/conversations/widget/${widgetId}`, {
+      params: {
+        page,
+        size: itemsPerPage
+      }
+    });
     return response.data;
   }
 }; 
