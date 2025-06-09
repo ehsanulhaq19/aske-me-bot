@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { FiTrash2, FiUpload, FiGrid, FiList } from 'react-icons/fi';
+import { FiTrash2, FiUpload, FiGrid, FiList, FiPlus } from 'react-icons/fi';
 import DashboardLayout from '@/layouts/DashboardLayout';
 import { documentsApi } from '@/api/documents';
 import useStore from '@/store';
@@ -138,9 +138,8 @@ export default function Documents() {
         <div className="documents__header">
           <h1 className="documents__header-title">Documents</h1>
           <div className="documents__header-actions">
-            <label className="button-primary upload-button" htmlFor="file-upload">
-              <FiUpload className="upload-icon" />
-              <span>Upload Documents</span>
+            <label className="button button--primary" htmlFor="file-upload">
+              <FiPlus className="button__icon" /> Upload Documents
             </label>
             <input
               type="file"
@@ -187,9 +186,8 @@ export default function Documents() {
             </div>
             <h2 className="documents__empty-text">No documents yet</h2>
             <p className="documents__empty-subtext">Upload your first document to get started</p>
-            <label className="button-primary upload-button" htmlFor="file-upload">
-              <FiUpload className="upload-icon" />
-              <span>Upload Document</span>
+            <label className="button button--primary" htmlFor="file-upload">
+              <FiPlus className="button__icon" /> Upload Document
             </label>
           </div>
         )}

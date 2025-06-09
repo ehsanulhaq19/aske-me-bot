@@ -1,5 +1,6 @@
 import axiosInstance from './axios';
 import { Conversation } from './conversations';
+import { Widget } from './widgets';
 
 export interface User {
   id: number;
@@ -33,6 +34,19 @@ export interface CreateMessageData {
 
 export interface UpdateMessageData {
   content?: string;
+}
+
+export interface GuestMessage {
+  conversation_name: string;
+  sender_email: string;
+  sender_name: string;
+  created_at: string;
+  widget: Widget | null;
+  message_content: string;
+}
+
+export interface GuestMessagesResponse {
+  items: GuestMessage[];
 }
 
 export const messagesApi = {
@@ -81,5 +95,10 @@ export const messagesApi = {
       }
     });
     return response.data;
-  }
+  },
+
+  getLatestGuestMessages: async () => {
+    const response = await axiosInstance.get<GuestMessagesResponse>('/messages/latest/guest');
+    return response.data;
+  },
 }; 

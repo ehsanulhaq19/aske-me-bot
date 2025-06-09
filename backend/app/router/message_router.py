@@ -1,9 +1,9 @@
 from fastapi import APIRouter, HTTPException, Query, Depends
-from app.schemas.message import MessageCreate, MessageResponse, MessageList
+from app.schemas.message import MessageCreate, MessageResponse, MessageList, LatestMessagesResponse
 from app.repository import message_repository
 from app.core.security import get_current_user
 from app.models.user import User
-from app.repository.user_repository import is_admin_or_normal_user, is_bot_user
+from app.repository.user_repository import is_admin_or_normal_user, is_bot_user, is_admin_user
 
 router = APIRouter()
 
@@ -91,4 +91,14 @@ def delete_message(
         raise HTTPException(status_code=403, detail="Forbidden")
     if not message_repository.delete_message(message_id):
         raise HTTPException(status_code=404, detail="Message not found")
-    return {"message": "Message deleted successfully"} 
+    return {"message": "Message deleted successfully"}
+
+@router.get("/latest/guest", response_model=LatestMessagesResponse)
+def get_latest_guest_messages(
+    current_user: User = Depends(get_current_user)
+):
+    if not is_admin_user(current_user):
+        raise HTTPException(status_code=403, detail="Only admin users can access this endpoint")
+    
+    messages = message_repository.get_latest_guest_messages()
+    return LatestMessagesResponse(items=messages) 

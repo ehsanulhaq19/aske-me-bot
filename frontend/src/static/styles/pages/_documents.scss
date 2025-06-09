@@ -21,23 +21,6 @@
     }
   }
 
-  .upload-button {
-    display: flex;
-    align-items: center;
-    gap: $spacing-sm;
-    padding: $spacing-sm $spacing-md;
-    cursor: pointer;
-    transition: all $transition-fast;
-
-    .upload-icon {
-      font-size: 1.2em;
-    }
-
-    &:hover {
-      transform: translateY(-1px);
-    }
-  }
-
   &__grid {
     @include grid-layout(6, $spacing-lg);
     margin-bottom: $spacing-xl;
@@ -276,4 +259,30 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.button {
+  padding: $spacing-sm $spacing-md;
+  border-radius: $border-radius-md;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  transition: all 0.2s ease;
+  cursor: pointer;
+
+  &--primary {
+    background-color: $primary-color;
+    color: white;
+    border: 1px solid $primary-color;
+
+    &:hover {
+      background-color: darken($primary-color, 5%);
+      transform: translateY(-1px);
+    }
+  }
+
+  &__icon {
+    font-size: 1.25rem;
+  }
 } 

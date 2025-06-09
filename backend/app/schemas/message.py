@@ -3,6 +3,7 @@ from typing import List, Optional
 from .user import UserOut
 from .conversation import ConversationResponse
 from datetime import datetime
+from .widget import WidgetResponse
 
 class MessageBase(BaseModel):
     content: str
@@ -25,4 +26,18 @@ class MessageList(BaseModel):
     items: List[MessageResponse]
     total: int
     page: int
-    size: int 
+    size: int
+
+class LatestMessageResponse(BaseModel):
+    conversation_name: str
+    sender_email: str
+    sender_name: str
+    created_at: datetime
+    widget: Optional[WidgetResponse] = None
+    message_content: str
+
+    class Config:
+        from_attributes = True
+
+class LatestMessagesResponse(BaseModel):
+    items: List[LatestMessageResponse] 

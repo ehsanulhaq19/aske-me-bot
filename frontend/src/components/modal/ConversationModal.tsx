@@ -87,13 +87,16 @@ const ConversationModal: React.FC<ConversationModalProps> = ({ isOpen, onClose, 
   };
 
   const formatDateTime = (date: string) => {
-    return new Date(date).toLocaleDateString('en-US', {
+    const utcDate = new Date(date + 'Z');
+    const localDate = utcDate.toLocaleString('en-US', {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
+      hour12: true
     });
+    return localDate;
   };
 
   const handleConversationsScroll = () => {

@@ -1,7 +1,7 @@
 .sidebar {
   width: 250px;
   height: 100vh;
-  background: linear-gradient(135deg, #2563eb 0%, rgba(37, 99, 235, 0.8) 100%);
+  background: linear-gradient(135deg, #1a237e 0%, #0d47a1 100%);
   position: sticky;
   top: 0;
   padding: 1.25rem 0;
@@ -26,18 +26,18 @@
   text-decoration: none;
   color: white;
   transition: background-color 0.2s ease;
-}
 
-.navItem:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-}
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
 
-.navItemIcon {
-  font-size: 1.25rem;
-}
+  .navItemIcon {
+    font-size: 1.25rem;
+  }
 
-.navItemText {
-  font-size: 1rem;
+  .navItemText {
+    font-size: 1rem;
+  }
 }
 
 .logoutButton {
@@ -52,8 +52,16 @@
   color: white;
   cursor: pointer;
   transition: background-color 0.2s ease;
-}
 
-.logoutButton:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .navItemIcon {
+    font-size: 1.25rem;
+  }
+
+  .navItemText {
+    font-size: 1rem;
+  }
 } 
